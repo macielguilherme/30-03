@@ -3,302 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerar Prazo de Guarda</title>
+    <title>DocZ - Gestão de Destinações Documentais</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-blue: #336699;
+            --success-green: #8dbb35;
+            --danger-red: #b33939;
+            --warning-orange: #f39c12;
+            --light-gray: #f5f5f5;
+            --border-color: #ddd;
+        }
+
         body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
             color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 15px;
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Topo: Título e Ícone */
-        .header-title {
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        .header-title i { margin-right: 8px; font-size: 14px; }
-
-        /* Seção de Filtros */
-        .filters-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .filter-group {
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
-        .filter-group label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 5px;
-        }
-        .filter-group label span { color: red; }
-
-        .filter-group select {
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            background-color: #fdfdfd;
-            font-size: 12px;
-            color: #777;
-        }
-
-        /* Info da Tabela */
-        .table-info-bar {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 8px 12px;
-            font-size: 12px;
-            font-weight: bold;
-            color: #444;
-            border-bottom: none;
-        }
-
-        /* Tabela Estilizada */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-        }
-
-        thead th {
+        .main-wrapper {
+            width: 90%;
+            min-width: 1000px;
             background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 8px;
-            color: #666;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-main {
+            background-color: var(--light-gray);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
             font-weight: bold;
-            text-align: left;
-            white-space: nowrap;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        thead th i {
-            float: right;
-            color: #ccc;
-            font-size: 10px;
-            margin-top: 2px;
+        .filters-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px;
+            background-color: #fdfdfd;
+            border-bottom: 1px solid #eee;
         }
 
-        tbody td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            color: #333;
-            text-align: left;
+        .filter-group { display: flex; flex-direction: column; }
+        .filter-group label { font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        .filter-group select, .filter-group input {
+            padding: 6px; border: 1px solid #ccc; border-radius: 2px; font-size: 12px;
         }
 
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* Rodapé da Tabela (Busca e Paginação) */
-        .table-footer {
+        .table-header-info {
+            padding: 10px 20px;
+            background-color: var(--light-gray);
+            font-size: 11px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-top: none;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        thead th {
             background-color: #f9f9f9;
+            color: var(--primary-blue);
+            text-align: left;
+            padding: 12px 8px;
+            border: 1px solid var(--border-color);
         }
 
-        .search-box {
-            font-size: 12px;
-            color: #666;
-        }
+        tbody td { padding: 10px 8px; border: 1px solid #eee; color: #444; }
+        tbody tr:nth-child(even) { background-color: #fafafa; }
 
-        .search-box input {
-            border: 1px solid #ccc;
-            padding: 4px 8px;
-            margin-left: 5px;
-            width: 150px;
-        }
+        .badge-vencido { color: var(--danger-red); font-weight: bold; }
 
-        .pagination {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .pagination button {
-            background-color: #e0e0e0;
-            border: 1px solid #ccc;
-            padding: 3px 10px;
-            font-size: 11px;
-            cursor: pointer;
-            color: #333;
-            border-radius: 3px;
-        }
-
-        .pagination button:disabled {
-            color: #999;
-            cursor: default;
-        }
-
-        .pagination input {
-            width: 30px;
-            text-align: center;
-            font-size: 11px;
-            padding: 2px;
-            border: 1px solid #ccc;
-            margin: 0 5px;
-        }
-
-        .pagination span {
-            font-size: 11px;
-            color: #666;
-        }
-
-        /* Botões de Ação Inferiores */
-        .bottom-actions {
+        .actions-footer {
+            padding: 15px 20px;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px;
+            background-color: var(--light-gray);
+            border-top: 1px solid var(--border-color);
         }
 
         .btn {
-            padding: 8px 25px;
-            font-size: 12px;
+            padding: 8px 16px;
+            font-size: 11px;
             font-weight: bold;
-            color: #fff;
             border: none;
-            border-radius: 4px;
+            border-radius: 2px;
             cursor: pointer;
             text-transform: uppercase;
         }
 
-        .btn-approve { background-color: #8dbb35; }
-        .btn-reject { background-color: #b33939; }
-        .btn-excel { background-color: #8dbb35; width: 200px; }
+        .btn-blue { background-color: var(--primary-blue); color: #fff; }
+        .btn-orange { background-color: var(--warning-orange); color: #fff; }
+        .btn-green { background-color: var(--success-green); color: #fff; }
+        .btn-gray { background-color: #666; color: #fff; }
 
-        .excel-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 10px;
+        /* MODAIS */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none; /* Controlado via JS */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
+
+        /* Overlay específico para a confirmação final ficar por cima da modal administrativa */
+        #modal-confirmacao {
+            z-index: 1100;
+        }
+
+        .modal-box-large {
+            background: #fff;
+            width: 85%;
+            max-width: 1000px;
+            max-height: 90vh;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--primary-blue);
+        }
+
+        .modal-box {
+            background: #fff;
+            padding: 25px;
+            width: 450px;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal-header-admin {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body { padding: 20px; overflow-y: auto; }
+        .modal-footer { padding: 15px; background: var(--light-gray); display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); }
 
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-title">
-        <i class="fas fa-users"></i> Gerar Prazo de Guarda
-    </div>
+    <div class="main-wrapper">
+        <div class="header-main">
+            <i class="fas fa-clock"></i> PASSO A: Monitoramento de Prazo de Guarda
+        </div>
 
-    <div class="filters-grid">
-        <div class="filter-group">
-            <label>Destinação Final <span>*</span></label>
-            <select>
-                <option>Destinação Final...</option>
-            </select>
+        <div class="filters-container">
+            <div class="filter-group">
+                <label>Projeto</label>
+                <select><option>Todos os Projetos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Status do Prazo</label>
+                <select><option>Vencidos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>ID do Objeto</label>
+                <input type="text" placeholder="Buscar ID...">
+            </div>
         </div>
-        <div class="filter-group">
-            <label>Projeto</label>
-            <select>
-                <option>Projetos...</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Solicitante</label>
-            <select>
-                <option>Solicitante...</option>
-            </select>
-        </div>
-    </div>
 
-    <div class="table-info-bar">
-        Total de Etiquetas: 33
-    </div>
-    
-    <div class="table-wrapper">
+        <div class="table-header-info">
+            <span>Listagem de documentos vencidos (DOCZ 1539)</span>
+            <span>2 registros encontrados</span>
+        </div>
+
         <table>
             <thead>
                 <tr>
-                    <th style="width: 20px;"><input type="checkbox"></th>
-                    <th>Data <i class="fas fa-caret-up"></i></th>
-                    <th>Objeto <i class="fas fa-sort"></i></th>
-                    <th>Projeto <i class="fas fa-sort"></i></th>
-                    <th>Status <i class="fas fa-sort"></i></th>
-                    <th>Solicitante <i class="fas fa-sort"></i></th>
-                    <th>Sigilo Associado a Classe <i class="fas fa-sort"></i></th>
-                    <th>Ação <i class="fas fa-sort"></i></th>
+                    <th style="width:30px"><input type="checkbox"></th>
+                    <th>Objeto</th>
+                    <th>Classificação</th>
+                    <th>Sigilo Associado</th>
+                    <th>Controle de Prazos</th>
+                    <th>Destinação Final</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <script>
-                    for(let i=0; i<10; i++) {
-                        document.write(`
-                            <tr>
-                                <td><input type="checkbox"></td>
-                                <td>{DATA}</td>
-                                <td>{OBJETO}</td>
-                                <td>{PROJETO}</td>
-                                <td>{STATUS}</td>
-                                <td>{SOLICITANTE}</td>
-                                <td>{SIGILO}</td>
-                                <td>{ACAO}</td>
-                            </tr>
-                        `);
-                    }
-                </script>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>DC00159G20005384SOS</td>
+                    <td>211 - Pesquisa Mineral</td>
+                    <td>NÃO</td>
+                    <td><span class="badge-vencido">Prazo vencido</span></td>
+                    <td>ELIMINAÇÃO</td>
+                    <td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>DC00159G10006934SOS</td>
+                    <td>213 - Licenciamento</td>
+                    <td>RESERVADO</td>
+                    <td><span class="badge-vencido">A vencer em 30 dias</span></td>
+                    <td>ELIMINAÇÃO</td>
+                    <td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td>
+                </tr>
             </tbody>
         </table>
-    </div>
 
-    <div class="table-footer">
-        <div class="search-box">
-            Buscar: <input type="text">
-        </div>
-        <div class="pagination">
-            <button disabled>Primeiro</button>
-            <button disabled>Anterior</button>
-            <input type="text" value="1">
-            <span>de 4</span>
-            <button>Seguinte</button>
-            <button>Último</button>
+        <div class="actions-footer">
+            <button class="btn btn-gray" onclick="recalcular()">Recalcular Prazo</button>
+            <button class="btn btn-blue" onclick="solicitar()">Solicitar Destinação</button>
+            <button class="btn btn-orange" onclick="abrirGerenciamento()">
+                <i class="fas fa-user-shield"></i> Gerenciar Destinações Administrativas
+            </button>
         </div>
     </div>
 
-    <div class="bottom-actions">
-        <button class="btn btn-approve">APROVAR</button>
-        <button class="btn btn-reject">RECUSAR</button>
+    <div class="modal-overlay" id="modal-passo-c">
+        <div class="modal-box-large">
+            <div class="modal-header-admin">
+                <span>GERENCIAR DESTINAÇÕES PENDENTES (PASSO C)</span>
+                <i class="fas fa-times" onclick="fecharModais()" style="cursor:pointer"></i>
+            </div>
+            
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label>Solicitante</label>
+                    <select><option>Todos os Solicitantes</option></select>
+                </div>
+                <div class="filter-group">
+                    <label style="color:var(--danger-red)">Destinação Final (OBRIGATÓRIO) *</label>
+                    <select id="filtro-obrigatorio">
+                        <option value="">Selecione...</option>
+                        <option value="ELI">ELIMINAÇÃO</option>
+                        <option value="GUA">GUARDA PERMANENTE</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <p style="font-size: 11px; margin-bottom: 10px;">Documentos aguardando homologação do Administrador:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:30px"><input type="checkbox"></th>
+                            <th>Objeto</th>
+                            <th>Solicitante</th>
+                            <th>Tipo Solicitado</th>
+                            <th>Sigilo Classe</th>
+                            <th>Data Solicitação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" checked></td>
+                            <td>DC00159G20005384SOS</td>
+                            <td>Usuário Solicitante</td>
+                            <td>ELIMINAÇÃO</td>
+                            <td>NÃO</td>
+                            <td>30/03/2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-gray" onclick="fecharModais()">Cancelar</button>
+                <button class="btn btn-green" onclick="executarFinal()">Executar Homologação Final</button>
+            </div>
+        </div>
     </div>
 
-    <div class="excel-container">
-        <button class="btn btn-excel">EXPORTAR PARA EXCEL</button>
+    <div class="modal-overlay" id="modal-confirmacao">
+        <div class="modal-box">
+            <div id="modal-confirm-title" style="font-weight:bold; font-size:14px; margin-bottom:15px; color: var(--primary-blue);"></div>
+            <div id="modal-confirm-body" style="font-size:12px; line-height:1.4; margin-bottom:20px;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn btn-gray" onclick="document.getElementById('modal-confirmacao').style.display='none'">Cancelar</button>
+                <button class="btn btn-green" onclick="finalizarProcesso()">Confirmar</button>
+            </div>
+        </div>
     </div>
-</div>
 
+    <script>
+        function abrirGerenciamento() {
+            document.getElementById('modal-passo-c').style.display = 'flex';
+        }
+
+        function fecharModais() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function solicitar() {
+            alert("RN3: Solicitação registrada como 'Pendente de Aprovação Administrativa'[cite: 45].");
+        }
+
+        function recalcular() {
+            alert("RN11: Recálculo executado imediatamente (não exige gerenciamento)[cite: 47, 86].");
+        }
+
+        function executarFinal() {
+            const filtro = document.getElementById('filtro-obrigatorio').value;
+            if (!filtro) {
+                alert("RN12: O filtro de Destinação Final é obrigatório para execução[cite: 51, 168].");
+                return;
+            }
+            
+            const title = (filtro === 'ELI') ? "Confirmação de Eliminação Documental" : "Confirmação de Guarda Permanente";
+            const body = (filtro === 'ELI') 
+                ? "Atenção! Será realizada a eliminação definitiva. Deseja prosseguir com a Eliminação? [cite: 121]" 
+                : "Atenção! Será realizado o recolhimento para guarda definitiva. Deseja prosseguir? [cite: 110]";
+            
+            document.getElementById('modal-confirm-title').innerText = title;
+            document.getElementById('modal-confirm-body').innerText = body;
+            
+            // Exibe a popup de confirmação com fundo
+            document.getElementById('modal-confirmacao').style.display = 'flex';
+        }
+
+        function finalizarProcesso() {
+            alert("RN9: Destinação executada, log registrado e status atualizado[cite: 56, 140, 147].");
+            fecharModais();
+        }
+    </script>
 </body>
 </html>
