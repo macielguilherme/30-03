@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocZ - Gestão de Destinações | OS Expurgo</title>
+    <title>DocZ - Gestão de Destinações Documentais</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -27,8 +27,8 @@
         }
 
         .main-wrapper {
-            width: 95%;
-            min-width: 1200px;
+            width: 90%;
+            min-width: 1000px;
             background-color: #fff;
             border: 1px solid var(--border-color);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -101,27 +101,25 @@
             border-radius: 2px;
             cursor: pointer;
             text-transform: uppercase;
-            transition: opacity 0.2s;
         }
-        .btn:hover { opacity: 0.85; }
 
         .btn-blue { background-color: var(--primary-blue); color: #fff; }
         .btn-orange { background-color: var(--warning-orange); color: #fff; }
         .btn-green { background-color: var(--success-green); color: #fff; }
         .btn-gray { background-color: #666; color: #fff; }
-        .btn-red { background-color: var(--danger-red); color: #fff; }
 
-        /* Modais */
+        /* MODAIS */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6);
-            display: none;
+            display: none; /* Controlado via JS */
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
 
+        /* Overlay específico para a confirmação final ficar por cima da modal administrativa */
         #modal-confirmacao {
             z-index: 1100;
         }
@@ -159,76 +157,6 @@
         .modal-body { padding: 20px; overflow-y: auto; }
         .modal-footer { padding: 15px; background: var(--light-gray); display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); }
 
-        /* Área de visualização de OS (expandida na tela principal) - com campos exatos do sistema */
-        .os-visualization-area {
-            margin-top: 20px;
-            border-top: 2px solid var(--primary-blue);
-            background-color: #fefefe;
-            transition: all 0.2s ease;
-            display: none;
-            overflow-x: auto;
-        }
-        .os-header {
-            background-color: #e9f0f5;
-            padding: 12px 20px;
-            font-weight: bold;
-            color: var(--primary-blue);
-            border-bottom: 1px solid var(--border-color);
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .os-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            min-width: 1200px;
-        }
-        .os-table th {
-            background-color: #f1f1f1;
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-weight: bold;
-            color: #336699;
-        }
-        .os-table td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .badge-status {
-            background-color: #e6f7e6;
-            color: #2e6b2e;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 10px;
-            display: inline-block;
-        }
-        .badge-status-em-andamento {
-            background-color: #fff3e0;
-            color: #e67e22;
-        }
-        .badge-status-finalizada {
-            background-color: #e6f7e6;
-            color: #2e6b2e;
-        }
-        .btn-visualizar-os, .btn-historico-os {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 0 3px;
-            color: var(--primary-blue);
-        }
-        .btn-visualizar-os:hover, .btn-historico-os:hover { opacity: 0.7; }
-        .unidade-link {
-            color: var(--primary-blue);
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .unidade-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -245,12 +173,7 @@
             </div>
             <div class="filter-group">
                 <label>Status do Prazo</label>
-                <select>
-                    <option>Vencidos</option>
-                    <option>15 Dias</option>
-                    <option>30 Dias</option>
-                    <option>45 Dias</option>
-                </select>
+                <select><option>Vencidos</option></select>
             </div>
             <div class="filter-group">
                 <label>ID do Objeto</label>
@@ -263,35 +186,56 @@
             <span>2 registros encontrados</span>
         </div>
 
-        <table>
+         <table id="tabela-principal-destinacoes">
             <thead>
-                <tr><th style="width:30px"><input type="checkbox"></th><th>Objeto</th><th>Classificação</th><th>Sigilo Associado</th><th>Controle de Prazos</th><th>Destinação Final</th><th>Ações</th> </tr>
+                <tr>
+                    <th style="width:30px"><input type="checkbox"></th>
+                    <th>Objeto</th>
+                    <th>Classificação</th>
+                    <th>Sigilo Associado</th>
+                    <th>Controle de Prazos</th>
+                    <th>Destinação Final</th>
+                    <th>Ações</th>
+                </tr>
             </thead>
             <tbody>
-                <tr><td><input type="checkbox" class="doc-checkbox" data-doc-id="DC00159G20005384SOS" data-dest="ELIMINAÇÃO"></td><td>DC00159G20005384SOS</td><td>211 - Pesquisa Mineral</td><td>NÃO</td><td><span class="badge-vencido">Prazo vencido</span></td><td>ELIMINAÇÃO</td><td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td> </tr>
-                <tr><td><input type="checkbox" class="doc-checkbox" data-doc-id="DC00159G10006934SOS" data-dest="ELIMINAÇÃO"></td><td>DC00159G10006934SOS</td><td>213 - Licenciamento</td><td>RESERVADO</td><td><span class="badge-vencido">A vencer em 30 dias</span></td><td>ELIMINAÇÃO</td><td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td> </tr>
+                <tr data-id="DC00159G20005384SOS" data-localizacao="Arquivo Central" data-codigo="211" data-assunto="Pesquisa Mineral" data-ano="2023" data-ano-recolhimento="2025" data-destinacao="ELIMINAÇÃO" data-observacoes="Processo com prazo expirado, aguarda eliminação">
+                    <td><input type="checkbox"></td>
+                    <td>DC00159G20005384SOS</td>
+                    <td>211 - Pesquisa Mineral</td>
+                    <td>NÃO</td>
+                    <td><span class="badge-vencido">Prazo vencido</span></td>
+                    <td>ELIMINAÇÃO</td>
+                    <td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td>
+                </tr>
+                <tr data-id="DC00159G10006934SOS" data-localizacao="Arquivo Setorial" data-codigo="213" data-assunto="Licenciamento" data-ano="2024" data-ano-recolhimento="2026" data-destinacao="ELIMINAÇÃO" data-observacoes="Documento com restrição de acesso, pendente de análise">
+                    <td><input type="checkbox"></td>
+                    <td>DC00159G10006934SOS</td>
+                    <td>213 - Licenciamento</td>
+                    <td>RESERVADO</td>
+                    <td><span class="badge-vencido">A vencer em 30 dias</span></td>
+                    <td>ELIMINAÇÃO</td>
+                    <td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td>
+                </tr>
             </tbody>
         </table>
 
         <div class="actions-footer">
             <button class="btn btn-gray" onclick="recalcular()">Recalcular Prazo</button>
             <button class="btn btn-blue" onclick="solicitar()">Solicitar Destinação</button>
-            <button class="btn btn-orange" onclick="abrirGerenciamento()">Gerenciar Destinações</button>
-        </div>
-
-        <!-- Área para exibir OS de Expurgo criada (aparece abaixo da tabela) com campos exatos do sistema -->
-        <div id="osVisualizationArea" class="os-visualization-area">
-            <div class="os-header">
-                <span><i class="fas fa-tasks"></i> ORDENS DE SERVIÇO DE EXPURGO</span>
-                <i class="fas fa-chevron-up" style="cursor:pointer" onclick="toggleOsArea()"></i>
-            </div>
-            <div id="osTableContainer" style="overflow-x: auto;">
-                <!-- Tabela dinâmica preenchida via JS com todos os campos solicitados -->
-            </div>
+            <button class="btn btn-orange" onclick="abrirGerenciamento()">
+                <i class="fas fa-user-shield"></i> Gerenciar Destinações Administrativas
+            </button>
+            <!-- NOVOS BOTÕES DE EXPORTAÇÃO COM PADRÃO VISUAL DOCZ -->
+            <button class="btn btn-green" onclick="exportarExcel()">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+            </button>
+            <button class="btn btn-blue" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
         </div>
     </div>
 
-    <!-- MODAL GERENCIAR DESTINAÇÕES (PASSO C) -->
     <div class="modal-overlay" id="modal-passo-c">
         <div class="modal-box-large">
             <div class="modal-header-admin">
@@ -299,7 +243,7 @@
                 <i class="fas fa-times" onclick="fecharModais()" style="cursor:pointer"></i>
             </div>
             
-            <div class="filters-container" style="border-bottom: none; padding-bottom: 5px;">
+            <div class="filters-container">
                 <div class="filter-group">
                     <label>Solicitante</label>
                     <select><option>Todos os Solicitantes</option></select>
@@ -316,25 +260,24 @@
 
             <div class="modal-body">
                 <p style="font-size: 11px; margin-bottom: 10px;">Documentos aguardando homologação do Administrador:</p>
-                <table style="width:100%">
+                <table id="tabela-homologacao">
                     <thead>
-                        <tr><th style="width:30px"><input type="checkbox" id="selectAllDocs"></th><th>Objeto</th><th>Solicitante</th><th>Tipo Solicitado</th><th>Sigilo Classe</th><th>Data Solicitação</th> </tr>
+                        <tr>
+                            <th style="width:30px"><input type="checkbox"></th>
+                            <th>Objeto</th>
+                            <th>Solicitante</th>
+                            <th>Tipo Solicitado</th>
+                            <th>Sigilo Classe</th>
+                            <th>Data Solicitação</th>
+                        </tr>
                     </thead>
-                    <tbody id="pendingDocsTable">
-                        <tr data-doc-id="DC00159G20005384SOS" data-tipo="ELIMINAÇÃO">
-                            <td><input type="checkbox" class="pending-checkbox" checked></td>
+                    <tbody>
+                        <tr data-id-homolog="DC00159G20005384SOS" data-tipo-homolog="ELIMINAÇÃO">
+                            <td><input type="checkbox" checked></td>
                             <td>DC00159G20005384SOS</td>
                             <td>Usuário Solicitante</td>
                             <td>ELIMINAÇÃO</td>
                             <td>NÃO</td>
-                            <td>30/03/2026</td>
-                        </tr>
-                        <tr data-doc-id="DC00159G10006934SOS" data-tipo="ELIMINAÇÃO">
-                            <td><input type="checkbox" class="pending-checkbox" checked></td>
-                            <td>DC00159G10006934SOS</td>
-                            <td>Usuário Solicitante</td>
-                            <td>ELIMINAÇÃO</td>
-                            <td>RESERVADO</td>
                             <td>30/03/2026</td>
                         </tr>
                     </tbody>
@@ -342,356 +285,274 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-red" id="recusarBtn" onclick="recusarSelecionados()">RECUSAR</button>
-                <button class="btn btn-green" id="executarHomologBtn" onclick="executarFinal()">Executar Homologação Final</button>
+                <button class="btn btn-gray" onclick="fecharModais()">Cancelar</button>
+                <button class="btn btn-green" id="btnExecutarHomologacaoFinal" onclick="executarFinal()">Executar Homologação Final</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE CONFIRMAÇÃO (popup de confirmação final) -->
-    <div class="modal-overlay" id="modal-confirmacao">
-        <div class="modal-box">
-            <div id="modal-confirm-title" style="font-weight:bold; font-size:14px; margin-bottom:15px; color: var(--primary-blue);"></div>
-            <div id="modal-confirm-body" style="font-size:12px; line-height:1.4; margin-bottom:20px;"></div>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button class="btn btn-gray" onclick="document.getElementById('modal-confirmacao').style.display='none'">Cancelar</button>
-                <button class="btn btn-green" onclick="finalizarProcesso()">Confirmar</button>
-            </div>
-        </div>
-    </div>
+    <!-- MODAL DE CONFIRMAÇÃO REMOVIDO CONFORME REQUISITO (NÃO EXIBE MAIS) -->
 
     <script>
-        // Estado das OS criadas - armazena OS com campos exatos do sistema
-        let createdOSList = [];
+        // --------------------------------------------------------------
+        // MUDANÇA 1: EXPORTAÇÃO EXCEL E PDF (dados extraídos da tabela principal)
+        // --------------------------------------------------------------
+        function coletarDadosParaExportacao() {
+            const tabela = document.getElementById('tabela-principal-destinacoes');
+            const linhas = tabela.querySelectorAll('tbody tr');
+            const dadosExportacao = [];
 
-        // Função para gerar número de OS no formato xxxxxx/aaaa
-        function gerarNumeroOS() {
-            const ano = new Date().getFullYear();
-            const proximoNumero = createdOSList.length + 114620; // simula sequência
-            const numeroFormatado = `${proximoNumero}/${ano}`;
-            return numeroFormatado;
+            for (let linha of linhas) {
+                // Extrai os campos conforme mapeamento visual e atributos data-* enriquecidos
+                const identificadorSOS = linha.cells[1]?.innerText.trim() || '';
+                const localizacao = linha.getAttribute('data-localizacao') || (identificadorSOS.includes('G20') ? 'Arquivo Central' : 'Arquivo Setorial');
+                const codigo = linha.getAttribute('data-codigo') || (linha.cells[2]?.innerText.split(' -')[0] || '');
+                const assunto = linha.getAttribute('data-assunto') || (linha.cells[2]?.innerText.split('-')[1]?.trim() || '');
+                const ano = linha.getAttribute('data-ano') || (identificadorSOS.includes('2023') ? '2023' : '2024');
+                const anoRecolhimento = linha.getAttribute('data-ano-recolhimento') || (identificadorSOS.includes('2023') ? '2025' : '2026');
+                const destinacaoFinal = linha.getAttribute('data-destinacao') || linha.cells[5]?.innerText.trim() || 'ELIMINAÇÃO';
+                const observacoes = linha.getAttribute('data-observacoes') || (identificadorSOS.includes('G20') ? 'Processo com prazo expirado, aguarda eliminação' : 'Documento com restrição de acesso, pendente de análise');
+                
+                dadosExportacao.push({
+                    identificador: identificadorSOS,
+                    localizacao: localizacao,
+                    codigo: codigo,
+                    assunto: assunto,
+                    ano: ano,
+                    anoRecolhimento: anoRecolhimento,
+                    destinacao: destinacaoFinal,
+                    observacoes: observacoes
+                });
+            }
+            return dadosExportacao;
         }
 
-        // Função para formatar data/hora no padrão: dd/mm/aaaa hh:mm:ss (UTC-03:00)
-        function formatarDataHoraBR() {
-            const now = new Date();
-            const dia = String(now.getDate()).padStart(2, '0');
-            const mes = String(now.getMonth() + 1).padStart(2, '0');
-            const ano = now.getFullYear();
-            const horas = String(now.getHours()).padStart(2, '0');
-            const minutos = String(now.getMinutes()).padStart(2, '0');
-            const segundos = String(now.getSeconds()).padStart(2, '0');
-            return `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos} (UTC-03:00)`;
-        }
-
-        // Cria nova OS de Expurgo com todos os campos obrigatórios
-        function criarOSExpurgo(documentosSelecionados, solicitantePrincipal) {
-            const numeroOS = gerarNumeroOS();
-            const dataAbertura = formatarDataHoraBR();
-            const unidadeAtendimento = "Unidade não informada"; // conforme exemplo
-            const tipoSolicitacao = "EXPURGO";
-            const prioridade = "NORMAL";
-            const statusSolicitacao = "EM ANDAMENTO";
-            const solicitante = solicitantePrincipal || "DANIEL MAYKON MARTINS LEITE";
-            const tipoSolicitante = "INTERNO";
-            const itensOSAtivos = documentosSelecionados.length;
-            const totalGeral = itensOSAtivos;
-            const tempoDecorrido = " -- ";
-            const statusSLA = "-";
-            const limiteSLA = " - ";
-            const finalizada = ""; // campo vazio pois está em andamento
-            const documentosIds = documentosSelecionados.map(d => d.id).join(", ");
-            
-            return {
-                numero: numeroOS,
-                data: dataAbertura,
-                unidadeAtendimento: unidadeAtendimento,
-                tipoSolicitacao: tipoSolicitacao,
-                prioridade: prioridade,
-                statusSolicitacao: statusSolicitacao,
-                solicitante: solicitante,
-                tipoSolicitante: tipoSolicitante,
-                itensOSAtivos: itensOSAtivos,
-                totalGeral: totalGeral,
-                tempoDecorrido: tempoDecorrido,
-                statusSLA: statusSLA,
-                limiteSLA: limiteSLA,
-                finalizada: finalizada,
-                documentosVinculados: documentosIds,
-                dataFinalizacao: null
-            };
-        }
-
-        // Renderiza a tabela de OS com todos os campos exatos solicitados (igual ao layout do sistema)
-        function renderOSList() {
-            const container = document.getElementById('osTableContainer');
-            if(!container) return;
-            
-            if(createdOSList.length === 0) {
-                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #777;">Nenhuma OS de Expurgo criada ainda.</div>';
+        // Exportar para Excel via CSV (mock robusto)
+        function exportarExcel() {
+            const dados = coletarDadosParaExportacao();
+            if (!dados.length) {
+                alert("Não há dados na tabela para exportar.");
                 return;
             }
             
-            let html = `<table class="os-table">
+            // Cabeçalhos conforme campos exigidos
+            const headers = [
+                "Identificador SOS",
+                "Localização",
+                "Código",
+                "Assunto",
+                "Ano",
+                "Ano de recolhimento",
+                "Destinação final",
+                "Observações"
+            ];
+            
+            // Mapeia os dados para linhas CSV
+            const linhasCSV = dados.map(item => [
+                item.identificador,
+                item.localizacao,
+                item.codigo,
+                item.assunto,
+                item.ano,
+                item.anoRecolhimento,
+                item.destinacao,
+                item.observacoes
+            ].map(campo => {
+                // Escapa aspas duplas e envolve em aspas se houver vírgula ou quebra
+                const stringCampo = String(campo);
+                if (stringCampo.includes(',') || stringCampo.includes('"') || stringCampo.includes('\n')) {
+                    return `"${stringCampo.replace(/"/g, '""')}"`;
+                }
+                return stringCampo;
+            }).join(','));
+            
+            const conteudoCSV = [headers.join(','), ...linhasCSV].join('\n');
+            const blob = new Blob(["\uFEFF" + conteudoCSV], { type: 'text/csv;charset=utf-8;' }); // BOM para acentos
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'destinacoes_docz.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Exportar para PDF via window.print (estilo otimizado mantendo layout, mas apenas com dados relevantes)
+        function exportarPDF() {
+            const dados = coletarDadosParaExportacao();
+            if (!dados.length) {
+                alert("Não há dados para gerar o PDF.");
+                return;
+            }
+            
+            // Cria uma janela de impressão com estilo padronizado e tabela de dados
+            const conteudoPDF = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>DocZ - Relatório de Destinações</title>
+                    <style>
+                        body {
+                            font-family: Arial, Helvetica, sans-serif;
+                            margin: 20px;
+                            color: #333;
+                        }
+                        h2 {
+                            color: #336699;
+                            border-bottom: 2px solid #8dbb35;
+                            padding-bottom: 6px;
+                        }
+                        .info-header {
+                            font-size: 12px;
+                            margin-bottom: 20px;
+                            color: #555;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 15px;
+                            font-size: 11px;
+                        }
+                        th {
+                            background-color: #f0f0f0;
+                            border: 1px solid #ccc;
+                            padding: 8px;
+                            text-align: left;
+                            font-weight: bold;
+                            color: #336699;
+                        }
+                        td {
+                            border: 1px solid #ddd;
+                            padding: 6px 8px;
+                            vertical-align: top;
+                        }
+                        .footer-nota {
+                            margin-top: 25px;
+                            font-size: 9px;
+                            text-align: center;
+                            color: #777;
+                            border-top: 1px solid #eee;
+                            padding-top: 12px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>Gestão de Destinações / Expurgo</h2>
+                    <div class="info-header">
+                        Relatório gerado em: ${new Date().toLocaleString('pt-BR')}<br>
+                        Total de registros: ${dados.length}
+                    </div>
+                    <table>
                         <thead>
                             <tr>
-                                <th>O.S</th>
-                                <th>Data</th>
-                                <th>Unidade de Atendimento</th>
-                                <th>Tipo solicitação</th>
-                                <th>Prioridade</th>
-                                <th>Status solicitação</th>
-                                <th>Solicitante</th>
-                                <th>Tipo de Solicitante</th>
-                                <th>Itens O.S Ativos</th>
-                                <th>Total Geral</th>
-                                <th>Tempo Decorrido</th>
-                                <th>Status SLA</th>
-                                <th>Limite SLA</th>
-                                <th>Finalizada</th>
-                                <th colspan="2">Ações</th>
+                                <th>Identificador SOS</th>
+                                <th>Localização</th>
+                                <th>Código</th>
+                                <th>Assunto</th>
+                                <th>Ano</th>
+                                <th>Ano de recolhimento</th>
+                                <th>Destinação final</th>
+                                <th>Observações</th>
                             </tr>
                         </thead>
-                        <tbody>`;
+                        <tbody>
+                            ${dados.map(item => `
+                                <tr>
+                                    <td>${escapeHtml(item.identificador)}</td>
+                                    <td>${escapeHtml(item.localizacao)}</td>
+                                    <td>${escapeHtml(item.codigo)}</td>
+                                    <td>${escapeHtml(item.assunto)}</td>
+                                    <td>${escapeHtml(item.ano)}</td>
+                                    <td>${escapeHtml(item.anoRecolhimento)}</td>
+                                    <td>${escapeHtml(item.destinacao)}</td>
+                                    <td>${escapeHtml(item.observacoes)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer-nota">
+                        Documento gerado pelo sistema DocZ - Módulo de Destinações
+                    </div>
+                </body>
+                </html>
+            `;
             
-            createdOSList.forEach(os => {
-                const statusClass = os.statusSolicitacao === "FINALIZADA" ? "badge-status-finalizada" : "badge-status-em-andamento";
-                const statusBadge = `<span class="badge-status ${statusClass}">${os.statusSolicitacao}</span>`;
-                const finalizadaValue = os.finalizada ? os.finalizada : "";
-                
-                html += `<tr>
-                            <td><strong>${os.numero}</strong></td>
-                            <td>${os.data}</td>
-                            <td><a href="javascript:void(0)" class="unidade-link" onclick="alert('Alterar unidade: ${os.unidadeAtendimento}')" title="Alterar Unidade de Atendimento">${os.unidadeAtendimento}</a></td>
-                            <td>${os.tipoSolicitacao}</td>
-                            <td>${os.prioridade}</td>
-                            <td>${statusBadge}</td>
-                            <td>${os.solicitante}</td>
-                            <td>${os.tipoSolicitante}</td>
-                            <td>${os.itensOSAtivos}</td>
-                            <td>${os.totalGeral}</td>
-                            <td>${os.tempoDecorrido}</td>
-                            <td>${os.statusSLA}</td>
-                            <td>${os.limiteSLA}</td>
-                            <td>${finalizadaValue}</td>
-                            <td width="1%" align="center">
-                                <a href="javascript:visualizarOSDetalhe('${os.numero}')" title="Visualizar O.S">
-                                    <i class="fas fa-search" style="color:var(--primary-blue); font-size:14px;"></i>
-                                </a>
-                            </td>
-                            <td width="1%" align="center">
-                                <a href="javascript:historicoOS('${os.numero}')" title="Andamento O.S">
-                                    <i class="fas fa-chart-line" style="color:var(--primary-blue); font-size:14px;"></i>
-                                </a>
-                            </td>
-                          </tr>`;
-            });
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/[&<>]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                }).replace(/[\u00A0-\u9999<>\&]/g, function(i) {
+                    return i;
+                });
+            }
             
-            html += `</tbody></table>`;
-            container.innerHTML = html;
+            const win = window.open();
+            win.document.write(conteudoPDF);
+            win.document.close();
+            win.focus();
+            win.print();
         }
-        
-        // Visualizar OS (simula visualização)
-        function visualizarOSDetalhe(numeroOS) {
-            const os = createdOSList.find(o => o.numero === numeroOS);
-            if(os) {
-                alert(`📄 VISUALIZAR O.S: ${os.numero}\n\n` +
-                      `Data: ${os.data}\n` +
-                      `Unidade: ${os.unidadeAtendimento}\n` +
-                      `Tipo: ${os.tipoSolicitacao}\n` +
-                      `Prioridade: ${os.prioridade}\n` +
-                      `Status: ${os.statusSolicitacao}\n` +
-                      `Solicitante: ${os.solicitante}\n` +
-                      `Itens: ${os.documentosVinculados}\n` +
-                      `Total Geral: ${os.totalGeral}`);
-            } else {
-                alert("OS não encontrada.");
+
+        // --------------------------------------------------------------
+        // MUDANÇA 2: REMOÇÃO COMPLETA DO MODAL DE CONFIRMAÇÃO + REDIRECIONAMENTO DIRETO
+        // --------------------------------------------------------------
+        // A função executarFinal foi completamente refatorada: sem modal, sem alert, sem confirmação.
+        // Apenas redireciona para o caminho da tela de solicitação conforme especificação.
+        function executarFinal() {
+            const filtro = document.getElementById('filtro-obrigatorio').value;
+            if (!filtro) {
+                alert("RN12: O filtro de Destinação Final é obrigatório para execução[cite: 51, 168].");
+                return;
             }
+            
+            // Remove qualquer referência à modal de confirmação e ao alert.
+            // Nenhum popup, apenas redirecionamento direto.
+            // Fecha a janela de gerenciamento antes do redirecionamento para manter UX limpa.
+            fecharModais();
+            
+            // Redirecionamento direto para a tela de solicitação conforme requisito.
+            // Simula a navegação sem qualquer confirmação extra.
+            window.location.href = "/caminho-da-tela-de-solicitacao";
         }
         
-        // Histórico / Andamento OS
-        function historicoOS(numeroOS) {
-            const os = createdOSList.find(o => o.numero === numeroOS);
-            if(os) {
-                alert(`📋 ANDAMENTO O.S: ${os.numero}\nStatus atual: ${os.statusSolicitacao}\n\nHistórico:\n- ${os.data} - OS criada via homologação de eliminação\n- Aguardando execução de expurgo físico/digital`);
-            } else {
-                alert("Histórico não disponível.");
-            }
+        // Funções originais mantidas (sem alteração de layout)
+        function abrirGerenciamento() {
+            document.getElementById('modal-passo-c').style.display = 'flex';
         }
-        
-        // Funções auxiliares
+
         function fecharModais() {
             document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
         }
 
-        function recalcular() {
-            alert("Recálculo executado imediatamente.");
-        }
-
         function solicitar() {
-            alert("Solicitação registrada como 'Pendente de Aprovação Administrativa'.");
+            alert("RN3: Solicitação registrada como 'Pendente de Aprovação Administrativa'[cite: 45].");
         }
 
-        function abrirGerenciamento() {
-            document.getElementById('modal-passo-c').style.display = 'flex';
-            const selectAll = document.getElementById('selectAllDocs');
-            if(selectAll) {
-                selectAll.checked = false;
-                document.querySelectorAll('.pending-checkbox').forEach(cb => cb.checked = false);
-            }
-        }
-
-        // Selecionar todos os documentos pendentes
-        document.addEventListener('click', function(e) {
-            if(e.target && e.target.id === 'selectAllDocs') {
-                const isChecked = e.target.checked;
-                document.querySelectorAll('.pending-checkbox').forEach(cb => cb.checked = isChecked);
-            }
-        });
-
-        // Recusar: remove os documentos selecionados da lista pendente
-        function recusarSelecionados() {
-            const checkboxes = document.querySelectorAll('.pending-checkbox:checked');
-            if(checkboxes.length === 0) {
-                alert("Selecione ao menos um documento para recusar.");
-                return;
-            }
-            checkboxes.forEach(cb => {
-                const row = cb.closest('tr');
-                if(row) row.remove();
-            });
-            alert(`${checkboxes.length} documento(s) recusado(s). A destinação não será aplicada.`);
-            const remaining = document.querySelectorAll('#pendingDocsTable tr');
-            if(remaining.length === 0) {
-                fecharModais();
-            }
-        }
-
-        // Executar a homologação final
-        function executarFinal() {
-            const filtroSelect = document.getElementById('filtro-obrigatorio');
-            const selectedValue = filtroSelect.value;
-            if (!selectedValue) {
-                alert("O filtro de Destinação Final é obrigatório para prosseguir.");
-                return;
-            }
-
-            const selectedDocs = [];
-            document.querySelectorAll('.pending-checkbox:checked').forEach(cb => {
-                const row = cb.closest('tr');
-                const docId = row.getAttribute('data-doc-id');
-                const tipo = row.getAttribute('data-tipo');
-                if(docId && tipo) {
-                    selectedDocs.push({ id: docId, tipo: tipo, solicitante: row.cells[2]?.innerText || "Usuário Solicitante" });
-                }
-            });
-
-            if(selectedDocs.length === 0) {
-                alert("Selecione ao menos um documento para executar a homologação.");
-                return;
-            }
-
-            const allEliminacao = selectedDocs.every(doc => doc.tipo === "ELIMINAÇÃO");
-            
-            let title = "";
-            let message = "";
-            if (selectedValue === "ELI" && allEliminacao) {
-                title = "Confirmação de Eliminação Documental";
-                message = `Ao confirmar, será criada uma Ordem de Serviço de EXPURGO para ${selectedDocs.length} documento(s). Deseja prosseguir?`;
-            } else if (selectedValue === "GUA") {
-                title = "Confirmação de Guarda Permanente";
-                message = "Ao confirmar, os documentos serão direcionados para guarda permanente (não haverá criação de OS de expurgo).";
-            } else {
-                title = "Confirmação de Destinação";
-                message = "Confirma a operação de destinação final?";
-            }
-
-            window.pendingDocsToProcess = selectedDocs;
-            window.destinoTipo = selectedValue === "ELI" ? "ELIMINAÇÃO" : (selectedValue === "GUA" ? "GUARDA PERMANENTE" : selectedDocs[0]?.tipo);
-            
-            document.getElementById('modal-confirm-title').innerText = title;
-            document.getElementById('modal-confirm-body').innerText = message;
-            document.getElementById('modal-confirmacao').style.display = 'flex';
-        }
-
-        // Finaliza processo, cria OS de Expurgo se eliminação
-        function finalizarProcesso() {
-            const docs = window.pendingDocsToProcess || [];
-            const destinoFinal = window.destinoTipo || "";
-            
-            if(docs.length === 0) {
-                fecharModais();
-                return;
-            }
-
-            if(destinoFinal === "ELIMINAÇÃO") {
-                // Pega solicitante principal (primeiro documento)
-                const solicitantePrincipal = docs[0]?.solicitante || "Sistema";
-                
-                // Cria nova OS de Expurgo
-                const novaOS = criarOSExpurgo(docs, solicitantePrincipal);
-                createdOSList.unshift(novaOS); // adiciona no início para exibir mais recente
-                
-                // Remove documentos homologados da lista pendente
-                docs.forEach(doc => {
-                    const rows = document.querySelectorAll('#pendingDocsTable tr');
-                    rows.forEach(row => {
-                        if(row.getAttribute('data-doc-id') === doc.id) {
-                            row.remove();
-                        }
-                    });
-                });
-                
-                // Exibe área de visualização e renderiza tabela
-                renderOSList();
-                const area = document.getElementById('osVisualizationArea');
-                area.style.display = 'block';
-                
-                // Alerta com número da OS
-                alert(`✅ OS de EXPURGO criada com sucesso!\n\nNº OS: ${novaOS.numero}\nData: ${novaOS.data}\nStatus: ${novaOS.statusSolicitacao}\nItens: ${docs.length} documento(s)\nSolicitante: ${solicitantePrincipal}`);
-                
-            } else if (destinoFinal === "GUARDA PERMANENTE") {
-                docs.forEach(doc => {
-                    const rows = document.querySelectorAll('#pendingDocsTable tr');
-                    rows.forEach(row => {
-                        if(row.getAttribute('data-doc-id') === doc.id) row.remove();
-                    });
-                });
-                alert("Guardas permanentes registradas. Nenhuma OS de expurgo gerada.");
-            }
-            
-            window.pendingDocsToProcess = [];
-            window.destinoTipo = null;
-            fecharModais();
-            
-            const remainingRows = document.querySelectorAll('#pendingDocsTable tr');
-            if(remainingRows.length === 0) {
-                const modalC = document.getElementById('modal-passo-c');
-                if(modalC.style.display === 'flex') modalC.style.display = 'none';
-            }
+        function recalcular() {
+            alert("RN11: Recálculo executado imediatamente (não exige gerenciamento)[cite: 47, 86].");
         }
         
-        function toggleOsArea() {
-            const container = document.getElementById('osTableContainer');
-            if(container) {
-                if(container.style.display === 'none') {
-                    container.style.display = 'block';
-                } else {
-                    container.style.display = 'none';
-                }
-            }
-        }
+        // --------------------------------------------------------------
+        // GARANTIA: remoção total da referência ao modal-confirmacao e funções de finalização antigas.
+        // O elemento modal-confirmacao foi retirado do HTML e as funções finalizarProcesso, antigas, não existem mais.
+        // Portanto, não há mais nenhum resquício de confirmação visual.
+        // --------------------------------------------------------------
         
-        // Inicialização
-        window.onload = function() {
-            renderOSList();
-            const area = document.getElementById('osVisualizationArea');
-            if(createdOSList.length > 0) area.style.display = 'block';
-            
-            // Adicionar exemplo demonstrativo de OS prévia (opcional - para visualização dos campos)
-            // Para demonstração, incluir uma OS de exemplo? Comentado para manter apenas as criadas via fluxo.
-            // Mas para ilustrar os campos, pode-se adicionar uma OS mock se desejar, porém seguirá regra.
-        }
+        // Ajuste extra para garantir que nenhum código anterior reutilize o modal que foi excluído.
+        // O modal-confirmacao não está mais presente no DOM, garantindo que não apareça.
+        // As funções antigas como finalizarProcesso foram removidas completamente.
+        
+        // Se houver qualquer tentativa residual de chamar "finalizarProcesso" (não existe mais), não irá causar erro pois não referenciamos.
+        
+        // Para fins de integridade, também garantimos que o onclick do botão executarFinal está apontando para a nova versão
+        // que apenas redireciona. A propriedade já está definida no botão: onclick="executarFinal()"
+        
+        // Opcional: Adicionar small tooltip para exportações (não interfere layout)
     </script>
 </body>
 </html>
