@@ -553,157 +553,21 @@
     </div>
 
     <script>
-        // Simulação de banco de dados de itens disponíveis para adicionar
-        let itensDisponiveis = [
-            { id: 1, nome: "CPU Dell Optiplex", descricao: "Computador desktop Dell, Intel Core i5, 8GB RAM" },
-            { id: 2, nome: "Monitor LG 24", descricao: "Monitor LED 24 polegadas, Full HD" },
-            { id: 3, nome: "Teclado Mecânico", descricao: "Teclado RGB com switch azul" },
-            { id: 4, nome: "Mouse Logitech", descricao: "Mouse óptico sem fio" },
-            { id: 5, nome: "Notebook Lenovo", descricao: "Notebook ThinkPad, 16GB RAM, SSD 512GB" },
-            { id: 6, nome: "Projetor Epson", descricao: "Projetor multimídia 3500 lumens" },
-            { id: 7, nome: "Cadeira de Escritório", descricao: "Cadeira giratória com apoio de braço" },
-            { id: 8, nome: "Mesa de Reunião", descricao: "Mesa oval para 6 pessoas" }
-        ];
+        
 
-        // Lista de itens selecionados
-        let itensSelecionados = [];
-
-        // Função para atualizar a tabela de itens selecionados
-        function atualizarTabelaItens() {
-            const tbody = document.getElementById('tabelaItensBody');
-            const countSpan = document.getElementById('countItems');
-            
-            if (itensSelecionados.length === 0) {
-                tbody.innerHTML = '<tr id="rowVazio"><td colspan="3" style="color: #999; padding: 20px; text-align: center;">Nenhum Objeto Selecionado</td></tr>';
-                countSpan.innerText = '0';
-                return;
-            }
-            
-            tbody.innerHTML = '';
-            itensSelecionados.forEach((item, index) => {
-                const row = tbody.insertRow();
-                const cellNome = row.insertCell(0);
-                const cellDesc = row.insertCell(1);
-                const cellAcoes = row.insertCell(2);
-                
-                cellNome.innerHTML = `<strong>${item.nome}</strong>`;
-                cellNome.style.textAlign = 'left';
-                cellDesc.innerHTML = item.descricao;
-                cellDesc.style.textAlign = 'left';
-                cellAcoes.innerHTML = `<a href="#" class="btn-remover" data-id="${item.id}" style="color: #c0392b; text-decoration: none; font-weight: bold;">✗ Remover</a>`;
-                cellAcoes.style.textAlign = 'center';
-            });
-            
-            countSpan.innerText = itensSelecionados.length;
-            
-            // Adicionar eventos de remoção
-            document.querySelectorAll('.btn-remover').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    removerItem(id);
-                });
-            });
-        }
         
-        // Função para remover item
-        function removerItem(id) {
-            itensSelecionados = itensSelecionados.filter(item => item.id !== id);
-            atualizarTabelaItens();
-        }
+            
+            
+            
+           
         
-        // Função para adicionar item (simulação)
-        function adicionarItemViaPrompt() {
-            if (itensDisponiveis.length === 0) {
-                alert('Nenhum item disponível para adicionar.');
-                return;
-            }
+       
             
-            // Criar uma lista de opções para o usuário
-            let listaItens = 'Itens disponíveis:\n';
-            itensDisponiveis.forEach((item, idx) => {
-                listaItens += `${idx + 1}. ${item.nome} - ${item.descricao.substring(0, 40)}...\n`;
-            });
-            listaItens += '\nDigite o número do item que deseja adicionar (ou 0 para cancelar):';
+          
             
-            let opcao = prompt(listaItens);
             
-            if (opcao && !isNaN(opcao)) {
-                const num = parseInt(opcao);
-                if (num > 0 && num <= itensDisponiveis.length) {
-                    const itemSelecionado = itensDisponiveis[num - 1];
-                    // Verificar se já não está adicionado
-                    if (!itensSelecionados.some(item => item.id === itemSelecionado.id)) {
-                        itensSelecionados.push({ ...itemSelecionado });
-                        atualizarTabelaItens();
-                        alert(`Item "${itemSelecionado.nome}" adicionado com sucesso!`);
-                    } else {
-                        alert('Este item já foi adicionado à lista!');
-                    }
-                } else if (num !== 0) {
-                    alert('Opção inválida!');
-                }
-            }
-        }
         
-        // Função para adicionar via busca (simulação)
-        function buscarEAdicionar() {
-            const termoBusca = document.getElementById('itemPesquisa').value.toLowerCase().trim();
-            
-            if (termoBusca === '') {
-                alert('Digite um termo para buscar!');
-                return;
-            }
-            
-            const itensEncontrados = itensDisponiveis.filter(item => 
-                item.nome.toLowerCase().includes(termoBusca) || 
-                item.descricao.toLowerCase().includes(termoBusca)
-            );
-            
-            if (itensEncontrados.length === 0) {
-                alert(`Nenhum item encontrado para: "${termoBusca}"`);
-                return;
-            }
-            
-            // Se encontrou apenas um item, adiciona diretamente
-            if (itensEncontrados.length === 1) {
-                const item = itensEncontrados[0];
-                if (!itensSelecionados.some(i => i.id === item.id)) {
-                    itensSelecionados.push({ ...item });
-                    atualizarTabelaItens();
-                    alert(`Item "${item.nome}" adicionado com sucesso!`);
-                } else {
-                    alert('Este item já foi adicionado à lista!');
-                }
-            } else {
-                // Múltiplos itens encontrados
-                let mensagem = 'Itens encontrados:\n';
-                itensEncontrados.forEach((item, idx) => {
-                    mensagem += `${idx + 1}. ${item.nome} - ${item.descricao.substring(0, 40)}...\n`;
-                });
-                mensagem += '\nDigite o número do item que deseja adicionar (ou 0 para cancelar):';
-                
-                let opcao = prompt(mensagem);
-                if (opcao && !isNaN(opcao)) {
-                    const num = parseInt(opcao);
-                    if (num > 0 && num <= itensEncontrados.length) {
-                        const item = itensEncontrados[num - 1];
-                        if (!itensSelecionados.some(i => i.id === item.id)) {
-                            itensSelecionados.push({ ...item });
-                            atualizarTabelaItens();
-                            alert(`Item "${item.nome}" adicionado com sucesso!`);
-                        } else {
-                            alert('Este item já foi adicionado à lista!');
-                        }
-                    } else if (num !== 0) {
-                        alert('Opção inválida!');
-                    }
-                }
-            }
-            
-            // Limpar campo de busca
-            document.getElementById('itemPesquisa').value = '';
-        }
+       
         
         // Função para enviar solicitação com modal de confirmação
         function enviarSolicitacao() {
