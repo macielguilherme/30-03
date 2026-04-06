@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
+<html lang="pt-br"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tela 2 - Carrinho de Solicitação (Czar)</title>
@@ -107,6 +104,7 @@
             justify-content: center;
             border-left: 1px solid #cdcdcd;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .ui-icon {
@@ -298,6 +296,12 @@
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        .button:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
         }
 
         .blueB {
@@ -323,8 +327,116 @@
         .clear {
             clear: both;
         }
+
+        /* Estilos para o modal de confirmação personalizado */
+        .modal-confirmacao {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-confirmacao .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-confirmacao .modal-content {
+            position: relative;
+            background: #f9f9f9;
+            border-radius: 5px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2001;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-confirmacao .modal-header {
+            background: #efefef url('https://docz.sosdocs.com.br/Docz/app/images/backgrounds/titleBg.png') repeat-x;
+            border-bottom: 1px solid #cdcdcd;
+            padding: 12px 15px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .modal-confirmacao .modal-header h3 {
+            font-size: 13px;
+            font-weight: bold;
+            color: #2E6B9B;
+            margin: 0;
+        }
+
+        .modal-confirmacao .modal-body {
+            padding: 25px 20px;
+            text-align: center;
+            color: #424242;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .modal-confirmacao .modal-body p {
+            margin: 0;
+        }
+
+        .modal-confirmacao .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e2e2e2;
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-confirmacao .btn-modal {
+            padding: 8px 25px;
+            font-size: 11px;
+            font-weight: bold;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .modal-confirmacao .btn-ok {
+            background: #7ca82a;
+            color: #fff;
+        }
+
+        .modal-confirmacao .btn-ok:hover {
+            background: #6b9123;
+        }
+
+        .modal-confirmacao .btn-cancel {
+            background: #999;
+            color: #fff;
+        }
+
+        .modal-confirmacao .btn-cancel:hover {
+            background: #777;
+        }
     </style>
-</head>
+<style id="03f5e978f0827de2ea4e16f308e0c679">@import url(chrome-extension://mfidniedemcgceagapgdekdbmanojomk/css/font.css);</style></head>
 
 <body>
 
@@ -335,19 +447,18 @@
     <div class="ui-dialog">
         <div class="ui-dialog-titlebar">
             <span class="ui-dialog-title">
-                <img src="https://docz.sosdocs.com.br/Docz/app/images/icons/dark/cart2.png" class="titleIcon"
-                    alt="Carrinho">
+                <img src="https://docz.sosdocs.com.br/Docz/app/images/icons/dark/cart2.png" class="titleIcon" alt="Carrinho">
                 Demo - Carrinho de Solicitação
             </span>
-            <a href="#" class="wijmo-wijdialog-captionbutton"><span class="ui-icon ui-icon-close">X</span></a>
-            <a href="#" class="wijmo-wijdialog-captionbutton"><span class="ui-icon ui-icon-extlink">M</span></a>
+            <a href="#" class="wijmo-wijdialog-captionbutton" id="btnClose"><span class="ui-icon ui-icon-close">X</span></a>
+            <a href="#" class="wijmo-wijdialog-captionbutton" id="btnExtend"><span class="ui-icon ui-icon-extlink">M</span></a>
         </div>
 
         <div class="ui-dialog-content">
             <div class="wrapper">
                 <ul class="tabs">
                     <li id="liTabDados" class="activeTab"><a href="#">Dados</a></li>
-                    <li id="liTabDest"><a href="#">Observações</a></li>
+                    <li id="liTabObs"><a href="#">Observações</a></li>
                     <li id="liTabDest"><a href="#">Destinatário(s)</a></li>
                 </ul>
 
@@ -363,11 +474,11 @@
                             </div>
                             <div class="formRow">
                                 <label>Prioridade da Solicitação:</label>
-                                <div class="selector">URGENTE</div>
+                                <div class="selector" id="prioridadeSelect">URGENTE</div>
                             </div>
                             <div class="formRow">
                                 <label>Responsável pelo Transporte:</label>
-                                <div class="selector">Guarda</div>
+                                <div class="selector" id="responsavelSelect">Guarda</div>
                             </div>
                         </div>
                     </div>
@@ -378,16 +489,14 @@
                                 <h6>Pesquisar Objeto:</h6>
                                 <div class="search-container">
                                     <input type="text" id="itemPesquisa" placeholder="Digite para pesquisar...">
-                                    <a href="#" style="margin-left: 5px;">
-                                        <img src="https://docz.sosdocs.com.br/Docz/app/images/icons/control/16/search.png"
-                                            alt="Buscar">
+                                    <a href="#" id="btnBuscar" style="margin-left: 5px;">
+                                        <img src="https://docz.sosdocs.com.br/Docz/app/images/icons/control/16/search.png" alt="Buscar">
                                     </a>
                                 </div>
                             </div>
 
                             <div class="title" style="border-top: 1px solid #ddd;">
-                                <img src="https://docz.sosdocs.com.br/Docz/app/images/icons/control/16/document-library.png"
-                                    class="titleIcon" alt="Biblioteca">
+                                <img src="https://docz.sosdocs.com.br/Docz/app/images/icons/control/16/document-library.png" class="titleIcon" alt="Biblioteca">
                                 <h6>Total de Itens: <span id="countItems" style="color: #2b6893;">0</span></h6>
                             </div>
                         </div>
@@ -396,18 +505,17 @@
                             <div class="title">
                                 <h6>Objeto(s) Selecionados:</h6>
                             </div>
-                            <table class="sTable">
+                            <table class="sTable" id="tabelaItens">
                                 <thead>
                                     <tr>
                                         <td width="20%">Objeto</td>
                                         <td width="60%">Descrição</td>
-                                        <td width="20%">Obs</td>
+                                        <td width="20%">Ações</td>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="3" style="color: #999; padding: 20px;">Nenhum Objeto Selecionado
-                                        </td>
+                                <tbody id="tabelaItensBody">
+                                    <tr id="rowVazio">
+                                        <td colspan="3" style="color: #999; padding: 20px; text-align: center;">Nenhum Objeto Selecionado</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -420,13 +528,379 @@
                         * Registros com localizações distintas serão geradas ordens de serviço por Unidade.<br>
                         * Notificar solicitante dos andamentos da O.S. automaticamente.
                     </p>
-                    <a href="#" class="button blueB">Adicionar mais itens</a>
-                    <a href="#" class="button greenB">Enviar solicitação</a>
+                    <a href="#" class="button blueB" id="btnAdicionarItens">Adicionar mais itens</a>
+                    <a href="#" class="button greenB" id="btnEnviar">Enviar solicitação</a>
                 </div>
             </div>
         </div>
     </div>
 
-</body>
+    <!-- Modal de Confirmação Personalizado -->
+    <div id="modalConfirmacao" class="modal-confirmacao">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar Envio</h3>
+            </div>
+            <div class="modal-body">
+                <p>Deseja confirmar o envio da solicitação de expurgo?<br>Após a confirmação, o processo administrativo será iniciado.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" id="modalCancelBtn">Cancelar</button>
+                <button class="btn-modal btn-ok" id="modalOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
 
-</html>
+    <script>
+        // Simulação de banco de dados de itens disponíveis para adicionar
+        let itensDisponiveis = [
+            { id: 1, nome: "CPU Dell Optiplex", descricao: "Computador desktop Dell, Intel Core i5, 8GB RAM" },
+            { id: 2, nome: "Monitor LG 24", descricao: "Monitor LED 24 polegadas, Full HD" },
+            { id: 3, nome: "Teclado Mecânico", descricao: "Teclado RGB com switch azul" },
+            { id: 4, nome: "Mouse Logitech", descricao: "Mouse óptico sem fio" },
+            { id: 5, nome: "Notebook Lenovo", descricao: "Notebook ThinkPad, 16GB RAM, SSD 512GB" },
+            { id: 6, nome: "Projetor Epson", descricao: "Projetor multimídia 3500 lumens" },
+            { id: 7, nome: "Cadeira de Escritório", descricao: "Cadeira giratória com apoio de braço" },
+            { id: 8, nome: "Mesa de Reunião", descricao: "Mesa oval para 6 pessoas" }
+        ];
+
+        // Lista de itens selecionados
+        let itensSelecionados = [];
+
+        // Função para atualizar a tabela de itens selecionados
+        function atualizarTabelaItens() {
+            const tbody = document.getElementById('tabelaItensBody');
+            const countSpan = document.getElementById('countItems');
+            
+            if (itensSelecionados.length === 0) {
+                tbody.innerHTML = '<tr id="rowVazio"><td colspan="3" style="color: #999; padding: 20px; text-align: center;">Nenhum Objeto Selecionado</td></tr>';
+                countSpan.innerText = '0';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            itensSelecionados.forEach((item, index) => {
+                const row = tbody.insertRow();
+                const cellNome = row.insertCell(0);
+                const cellDesc = row.insertCell(1);
+                const cellAcoes = row.insertCell(2);
+                
+                cellNome.innerHTML = `<strong>${item.nome}</strong>`;
+                cellNome.style.textAlign = 'left';
+                cellDesc.innerHTML = item.descricao;
+                cellDesc.style.textAlign = 'left';
+                cellAcoes.innerHTML = `<a href="#" class="btn-remover" data-id="${item.id}" style="color: #c0392b; text-decoration: none; font-weight: bold;">✗ Remover</a>`;
+                cellAcoes.style.textAlign = 'center';
+            });
+            
+            countSpan.innerText = itensSelecionados.length;
+            
+            // Adicionar eventos de remoção
+            document.querySelectorAll('.btn-remover').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    removerItem(id);
+                });
+            });
+        }
+        
+        // Função para remover item
+        function removerItem(id) {
+            itensSelecionados = itensSelecionados.filter(item => item.id !== id);
+            atualizarTabelaItens();
+        }
+        
+        // Função para adicionar item (simulação)
+        function adicionarItemViaPrompt() {
+            if (itensDisponiveis.length === 0) {
+                alert('Nenhum item disponível para adicionar.');
+                return;
+            }
+            
+            // Criar uma lista de opções para o usuário
+            let listaItens = 'Itens disponíveis:\n';
+            itensDisponiveis.forEach((item, idx) => {
+                listaItens += `${idx + 1}. ${item.nome} - ${item.descricao.substring(0, 40)}...\n`;
+            });
+            listaItens += '\nDigite o número do item que deseja adicionar (ou 0 para cancelar):';
+            
+            let opcao = prompt(listaItens);
+            
+            if (opcao && !isNaN(opcao)) {
+                const num = parseInt(opcao);
+                if (num > 0 && num <= itensDisponiveis.length) {
+                    const itemSelecionado = itensDisponiveis[num - 1];
+                    // Verificar se já não está adicionado
+                    if (!itensSelecionados.some(item => item.id === itemSelecionado.id)) {
+                        itensSelecionados.push({ ...itemSelecionado });
+                        atualizarTabelaItens();
+                        alert(`Item "${itemSelecionado.nome}" adicionado com sucesso!`);
+                    } else {
+                        alert('Este item já foi adicionado à lista!');
+                    }
+                } else if (num !== 0) {
+                    alert('Opção inválida!');
+                }
+            }
+        }
+        
+        // Função para adicionar via busca (simulação)
+        function buscarEAdicionar() {
+            const termoBusca = document.getElementById('itemPesquisa').value.toLowerCase().trim();
+            
+            if (termoBusca === '') {
+                alert('Digite um termo para buscar!');
+                return;
+            }
+            
+            const itensEncontrados = itensDisponiveis.filter(item => 
+                item.nome.toLowerCase().includes(termoBusca) || 
+                item.descricao.toLowerCase().includes(termoBusca)
+            );
+            
+            if (itensEncontrados.length === 0) {
+                alert(`Nenhum item encontrado para: "${termoBusca}"`);
+                return;
+            }
+            
+            // Se encontrou apenas um item, adiciona diretamente
+            if (itensEncontrados.length === 1) {
+                const item = itensEncontrados[0];
+                if (!itensSelecionados.some(i => i.id === item.id)) {
+                    itensSelecionados.push({ ...item });
+                    atualizarTabelaItens();
+                    alert(`Item "${item.nome}" adicionado com sucesso!`);
+                } else {
+                    alert('Este item já foi adicionado à lista!');
+                }
+            } else {
+                // Múltiplos itens encontrados
+                let mensagem = 'Itens encontrados:\n';
+                itensEncontrados.forEach((item, idx) => {
+                    mensagem += `${idx + 1}. ${item.nome} - ${item.descricao.substring(0, 40)}...\n`;
+                });
+                mensagem += '\nDigite o número do item que deseja adicionar (ou 0 para cancelar):';
+                
+                let opcao = prompt(mensagem);
+                if (opcao && !isNaN(opcao)) {
+                    const num = parseInt(opcao);
+                    if (num > 0 && num <= itensEncontrados.length) {
+                        const item = itensEncontrados[num - 1];
+                        if (!itensSelecionados.some(i => i.id === item.id)) {
+                            itensSelecionados.push({ ...item });
+                            atualizarTabelaItens();
+                            alert(`Item "${item.nome}" adicionado com sucesso!`);
+                        } else {
+                            alert('Este item já foi adicionado à lista!');
+                        }
+                    } else if (num !== 0) {
+                        alert('Opção inválida!');
+                    }
+                }
+            }
+            
+            // Limpar campo de busca
+            document.getElementById('itemPesquisa').value = '';
+        }
+        
+        // Função para enviar solicitação com modal de confirmação
+        function enviarSolicitacao() {
+            // Verificar se há itens selecionados
+            if (itensSelecionados.length === 0) {
+                alert('Não é possível enviar a solicitação. Adicione pelo menos um item ao carrinho!');
+                return;
+            }
+            
+            // Mostrar modal de confirmação personalizado
+            const modal = document.getElementById('modalConfirmacao');
+            modal.style.display = 'flex';
+        }
+        
+        // Função para confirmar envio (OK)
+        function confirmarEnvio() {
+            // Fechar modal
+            fecharModal();
+            
+            // Coletar informações adicionais
+            const prioridade = document.getElementById('prioridadeSelect') ? document.getElementById('prioridadeSelect').innerText : 'URGENTE';
+            const responsavel = document.getElementById('responsavelSelect') ? document.getElementById('responsavelSelect').innerText : 'Guarda';
+            
+            // Criar objeto com os dados da solicitação
+            const dadosSolicitacao = {
+                tipo: 'EXPURGO',
+                prioridade: prioridade,
+                responsavelTransporte: responsavel,
+                itens: itensSelecionados,
+                totalItens: itensSelecionados.length,
+                dataEnvio: new Date().toLocaleString('pt-BR')
+            };
+            
+            // Salvar no localStorage para possível uso na página 2.html
+            localStorage.setItem('solicitacaoExpurgo', JSON.stringify(dadosSolicitacao));
+            
+            // Exibir mensagem de sucesso antes de redirecionar
+            alert('✓ Solicitação enviada com sucesso! Redirecionando...');
+            
+            // Redirecionar para 2.html
+            window.location.href = '2.html';
+        }
+        
+        // Função para fechar modal
+        function fecharModal() {
+            const modal = document.getElementById('modalConfirmacao');
+            modal.style.display = 'none';
+        }
+        
+        // Função para fechar o diálogo (simulação)
+        function fecharDialogo() {
+            if (confirm('Deseja fechar a janela? As alterações não salvas serão perdidas.')) {
+                alert('Fechando diálogo...');
+                // Aqui poderia fechar ou redirecionar
+            }
+        }
+        
+        // Função para maximizar/restaurar (simulação)
+        function maximizarDialogo() {
+            alert('Função de maximizar (simulação)');
+        }
+        
+        // Eventos das abas (simulação)
+        function initTabs() {
+            const tabDados = document.getElementById('liTabDados');
+            const tabObs = document.getElementById('liTabObs');
+            const tabDest = document.getElementById('liTabDest');
+            
+            function setActiveTab(activeTab) {
+                [tabDados, tabObs, tabDest].forEach(tab => {
+                    tab.classList.remove('activeTab');
+                });
+                activeTab.classList.add('activeTab');
+            }
+            
+            if (tabDados) {
+                tabDados.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setActiveTab(tabDados);
+                    alert('Aba Dados (simulação)');
+                });
+            }
+            
+            if (tabObs) {
+                tabObs.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setActiveTab(tabObs);
+                    alert('Aba Observações (simulação)');
+                });
+            }
+            
+            if (tabDest) {
+                tabDest.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setActiveTab(tabDest);
+                    alert('Aba Destinatário(s) (simulação)');
+                });
+            }
+        }
+        
+        // Adicionar alguns itens de exemplo para demonstração
+        function adicionarItensExemplo() {
+            // Adicionar 2 itens de exemplo para mostrar que o sistema funciona
+            setTimeout(() => {
+                if (itensSelecionados.length === 0) {
+                    itensSelecionados.push({ ...itensDisponiveis[0] });
+                    itensSelecionados.push({ ...itensDisponiveis[2] });
+                    atualizarTabelaItens();
+                }
+            }, 500);
+        }
+        
+        // Inicializar eventos
+        function init() {
+            // Botão de adicionar itens
+            const btnAdicionar = document.getElementById('btnAdicionarItens');
+            if (btnAdicionar) {
+                btnAdicionar.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    adicionarItemViaPrompt();
+                });
+            }
+            
+            // Botão de buscar
+            const btnBuscar = document.getElementById('btnBuscar');
+            if (btnBuscar) {
+                btnBuscar.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    buscarEAdicionar();
+                });
+            }
+            
+            // Campo de pesquisa com Enter
+            const inputPesquisa = document.getElementById('itemPesquisa');
+            if (inputPesquisa) {
+                inputPesquisa.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        buscarEAdicionar();
+                    }
+                });
+            }
+            
+            // Botão enviar
+            const btnEnviar = document.getElementById('btnEnviar');
+            if (btnEnviar) {
+                btnEnviar.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    enviarSolicitacao();
+                });
+            }
+            
+            // Botão fechar
+            const btnClose = document.getElementById('btnClose');
+            if (btnClose) {
+                btnClose.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    fecharDialogo();
+                });
+            }
+            
+            // Botão maximizar
+            const btnExtend = document.getElementById('btnExtend');
+            if (btnExtend) {
+                btnExtend.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    maximizarDialogo();
+                });
+            }
+            
+            // Modal events
+            const modalOverlay = document.querySelector('#modalConfirmacao .modal-overlay');
+            const modalCancelBtn = document.getElementById('modalCancelBtn');
+            const modalOkBtn = document.getElementById('modalOkBtn');
+            
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', fecharModal);
+            }
+            
+            if (modalCancelBtn) {
+                modalCancelBtn.addEventListener('click', fecharModal);
+            }
+            
+            if (modalOkBtn) {
+                modalOkBtn.addEventListener('click', confirmarEnvio);
+            }
+            
+            // Inicializar abas
+            initTabs();
+            
+            // Adicionar itens de exemplo
+            adicionarItensExemplo();
+        }
+        
+        // Iniciar quando a página carregar
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+
+
+</body></html>
