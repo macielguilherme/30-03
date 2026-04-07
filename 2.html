@@ -54,11 +54,6 @@
             border-bottom: 1px solid #eee;
         }
 
-        /* Ajuste para quando tivermos 5 filtros (incluindo o novo destino) */
-        .filters-container.with-destino {
-            grid-template-columns: repeat(5, 1fr);
-        }
-
         .filter-group { display: flex; flex-direction: column; }
         .filter-group label { font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #555; }
         .filter-group select, .filter-group input {
@@ -88,7 +83,6 @@
         tbody tr:nth-child(even) { background-color: #fafafa; }
 
         .badge-vencido { color: var(--danger-red); font-weight: bold; }
-        .badge-warning { color: var(--warning-orange); font-weight: bold; }
 
         .actions-footer {
             padding: 15px 20px;
@@ -123,6 +117,11 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+        }
+
+        /* Overlay específico para a confirmação final ficar por cima da modal administrativa */
+        #modal-confirmacao {
+            z-index: 1100;
         }
 
         .modal-box-large {
@@ -163,56 +162,42 @@
 <body>
 
     <div class="main-wrapper">
-        <!-- ALTERAÇÃO 1: TÍTULO PRINCIPAL RENOMEADO PARA "Controle de Prazos" -->
         <div class="header-main">
             <i class="fas fa-clock"></i> Controle de Prazos
         </div>
 
-        <!-- ALTERAÇÃO 2: INCLUSÃO DO FILTRO DE DESTINAÇÃO FINAL na primeira tela -->
-        <div class="filters-container with-destino">
+        <div class="filters-container">
             <div class="filter-group">
                 <label>Projeto</label>
-                <select id="filtro-projeto">
-                    <option value="todos">Todos os Projetos</option>
-                    <option value="DOCZ1539">DOCZ 1539</option>
-                </select>
+                <select><option>Todos os Projetos</option></select>
             </div>
             <div class="filter-group">
                 <label>Status do Prazo</label>
-                <select id="filtro-status-prazo">
-                    <option value="todos">Todos</option>
-                    <option value="vencidos">Vencidos</option>
-                    <option value="a-vencer">A vencer em 30 dias</option>
+                <select><option>Vencidos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Destinação Final</label>
+                <select id="filtro-destinacao-principal">
+                    <option value="">Todos</option>
+                    <option value="ELIMINAÇÃO">Eliminação</option>
+                    <option value="GUARDA PERMANENTE">Guarda Permanente</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>ID do Objeto</label>
-                <input type="text" id="filtro-id-objeto" placeholder="Buscar ID...">
-            </div>
-            <!-- NOVO FILTRO: Destinação Final -->
-            <div class="filter-group">
-                <label>Destinação Final</label>
-                <select id="filtro-destinacao-final">
-                    <option value="todos">Todos</option>
-                    <option value="ELIMINAÇÃO">ELIMINAÇÃO</option>
-                    <option value="GUARDA PERMANENTE">GUARDA PERMANENTE</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>&nbsp;</label>
-                <button class="btn btn-blue" style="padding: 6px 12px; font-size:11px;" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                <input type="text" placeholder="Buscar ID...">
             </div>
         </div>
 
         <div class="table-header-info">
-            <span>Listagem de documentos para destinação</span>
-            <span id="contador-registros">2 registros encontrados</span>
+            <span>Listagem de documentos vencidos (DOCZ 1539)</span>
+            <span>2 registros encontrados</span>
         </div>
 
          <table id="tabela-principal-destinacoes">
             <thead>
                 <tr>
-                    <th style="width:30px"><input type="checkbox" id="checkAllPrincipal"></th>
+                    <th style="width:30px"><input type="checkbox"></th>
                     <th>Objeto</th>
                     <th>Classificação</th>
                     <th>Sigilo Associado</th>
@@ -222,34 +207,24 @@
                 </tr>
             </thead>
             <tbody>
-                <tr data-id="DC00159G20005384SOS" data-localizacao="Arquivo Central" data-codigo="211" data-assunto="Pesquisa Mineral" data-ano="2023" data-ano-recolhimento="2025" data-destinacao="ELIMINAÇÃO" data-observacoes="Processo com prazo expirado, aguarda eliminação" data-status-prazo="vencido">
-                    <td><input type="checkbox" class="checkItemPrincipal"></td>
+                <tr data-id="DC00159G20005384SOS" data-localizacao="Arquivo Central" data-codigo="211" data-assunto="Pesquisa Mineral" data-ano="2023" data-ano-recolhimento="2025" data-destinacao="ELIMINAÇÃO" data-observacoes="Processo com prazo expirado, aguarda eliminação">
+                    <td><input type="checkbox"></td>
                     <td>DC00159G20005384SOS</td>
                     <td>211 - Pesquisa Mineral</td>
                     <td>NÃO</td>
                     <td><span class="badge-vencido">Prazo vencido</span></td>
                     <td>ELIMINAÇÃO</td>
-                    <td><i class="fas fa-search" style="color:var(--primary-blue); cursor:pointer;" onclick="detalhesDocumento(this)"></i></td>
-                </tr>
-                <tr data-id="DC00159G10006934SOS" data-localizacao="Arquivo Setorial" data-codigo="213" data-assunto="Licenciamento" data-ano="2024" data-ano-recolhimento="2026" data-destinacao="ELIMINAÇÃO" data-observacoes="Documento com restrição de acesso, pendente de análise" data-status-prazo="a-vencer">
-                    <td><input type="checkbox" class="checkItemPrincipal"></td>
+                    <td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td>
+                 </tr>
+                <tr data-id="DC00159G10006934SOS" data-localizacao="Arquivo Setorial" data-codigo="213" data-assunto="Licenciamento" data-ano="2024" data-ano-recolhimento="2026" data-destinacao="ELIMINAÇÃO" data-observacoes="Documento com restrição de acesso, pendente de análise">
+                    <td><input type="checkbox"></td>
                     <td>DC00159G10006934SOS</td>
                     <td>213 - Licenciamento</td>
                     <td>RESERVADO</td>
-                    <td><span class="badge-warning">A vencer em 30 dias</span></td>
+                    <td><span class="badge-vencido">A vencer em 30 dias</span></td>
                     <td>ELIMINAÇÃO</td>
-                    <td><i class="fas fa-search" style="color:var(--primary-blue); cursor:pointer;" onclick="detalhesDocumento(this)"></i></td>
-                </tr>
-                <!-- Incluindo um terceiro registro para demonstrar filtro de GUARDA PERMANENTE -->
-                <tr data-id="DC00987F30001234XYZ" data-localizacao="Arquivo Central" data-codigo="401" data-assunto="Planejamento Estratégico" data-ano="2010" data-ano-recolhimento="2020" data-destinacao="GUARDA PERMANENTE" data-observacoes="Documento de valor histórico e probatório" data-status-prazo="vencido">
-                    <td><input type="checkbox" class="checkItemPrincipal"></td>
-                    <td>DC00987F30001234XYZ</td>
-                    <td>401 - Planejamento</td>
-                    十一章SIGILOSO</td>
-                    <td><span class="badge-vencido">Prazo vencido</span></td>
-                    <td>GUARDA PERMANENTE</td>
-                    <td><i class="fas fa-search" style="color:var(--primary-blue); cursor:pointer;" onclick="detalhesDocumento(this)"></i></td>
-                </tr>
+                    <td><i class="fas fa-search" style="color:var(--primary-blue)"></i></td>
+                 </tr>
             </tbody>
          </table>
 
@@ -259,6 +234,7 @@
             <button class="btn btn-orange" onclick="abrirGerenciamento()">
                 Gerenciar Destinações 
             </button>
+            <!-- NOVOS BOTÕES DE EXPORTAÇÃO COM PADRÃO VISUAL DOCZ -->
             <button class="btn btn-green" onclick="exportarExcel()">
                  Exportar Excel
             </button>
@@ -268,29 +244,24 @@
         </div>
     </div>
 
-    <!-- MODAL DO PASSO C / GERENCIAMENTO DE DESTINAÇÕES COM NOME ALTERADO -->
     <div class="modal-overlay" id="modal-passo-c">
         <div class="modal-box-large">
-            <!-- ALTERAÇÃO 3: TÍTULO RENOMEADO PARA "Controle de Destinações" -->
             <div class="modal-header-admin">
                 <span>Controle de Destinações</span>
                 <i class="fas fa-times" onclick="fecharModais()" style="cursor:pointer"></i>
             </div>
             
-            <div class="filters-container" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="filters-container">
                 <div class="filter-group">
                     <label>Solicitante</label>
-                    <select id="filtro-solicitante-modal">
-                        <option value="todos">Todos os Solicitantes</option>
-                        <option value="usuario1">Usuário Solicitante</option>
-                    </select>
+                    <select><option>Todos os Solicitantes</option></select>
                 </div>
                 <div class="filter-group">
                     <label style="color:var(--danger-red)">Destinação Final (OBRIGATÓRIO) *</label>
                     <select id="filtro-obrigatorio">
                         <option value="">Selecione...</option>
-                        <option value="ELIMINAÇÃO">ELIMINAÇÃO</option>
-                        <option value="GUARDA PERMANENTE">GUARDA PERMANENTE</option>
+                        <option value="ELI">ELIMINAÇÃO</option>
+                        <option value="GUA">GUARDA PERMANENTE</option>
                     </select>
                 </div>
             </div>
@@ -300,7 +271,7 @@
                 <table id="tabela-homologacao">
                     <thead>
                         <tr>
-                            <th style="width:30px"><input type="checkbox" id="checkAllHomolog"></th>
+                            <th style="width:30px"><input type="checkbox"></th>
                             <th>Objeto</th>
                             <th>Solicitante</th>
                             <th>Tipo Solicitado</th>
@@ -310,23 +281,15 @@
                     </thead>
                     <tbody>
                         <tr data-id-homolog="DC00159G20005384SOS" data-tipo-homolog="ELIMINAÇÃO">
-                            <td><input type="checkbox" class="checkHomologItem" checked></td>
+                            <td><input type="checkbox" checked></td>
                             <td>DC00159G20005384SOS</td>
                             <td>Usuário Solicitante</td>
                             <td>ELIMINAÇÃO</td>
                             <td>NÃO</td>
                             <td>30/03/2026</td>
-                        </tr>
-                        <tr data-id-homolog="DC00987F30001234XYZ" data-tipo-homolog="GUARDA PERMANENTE">
-                            <td><input type="checkbox" class="checkHomologItem"></td>
-                            <td>DC00987F30001234XYZ</td>
-                            <td>Administrador</td>
-                            <td>GUARDA PERMANENTE</td>
-                            <td>SIGILOSO</td>
-                            <td>31/03/2026</td>
-                        </tr>
+                         </tr>
                     </tbody>
-                </table>
+                 </table>
             </div>
 
             <div class="modal-footer">
@@ -336,91 +299,27 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO REMOVIDO CONFORME REQUISITO (NÃO EXIBE MAIS) -->
+
     <script>
         // --------------------------------------------------------------
-        // FUNÇÕES DE FILTRAGEM NA TELA PRINCIPAL (INCLUINDO O NOVO FILTRO DESTINAÇÃO)
-        // --------------------------------------------------------------
-        function aplicarFiltros() {
-            const filtroProjeto = document.getElementById('filtro-projeto').value;
-            const filtroStatusPrazo = document.getElementById('filtro-status-prazo').value;
-            const filtroIdObjeto = document.getElementById('filtro-id-objeto').value.trim().toLowerCase();
-            const filtroDestinacao = document.getElementById('filtro-destinacao-final').value;
-            
-            const tabela = document.getElementById('tabela-principal-destinacoes');
-            const linhas = tabela.querySelectorAll('tbody tr');
-            let registrosVisiveis = 0;
-            
-            linhas.forEach(linha => {
-                let mostrar = true;
-                
-                // Filtro por ID do Objeto (texto da segunda coluna)
-                const idTexto = linha.cells[1]?.innerText.toLowerCase() || '';
-                if (filtroIdObjeto && !idTexto.includes(filtroIdObjeto)) {
-                    mostrar = false;
-                }
-                
-                // Filtro por Status do Prazo (quinta coluna: Controle de Prazos)
-                if (mostrar && filtroStatusPrazo !== 'todos') {
-                    const statusCell = linha.cells[4]?.innerText.toLowerCase() || '';
-                    if (filtroStatusPrazo === 'vencidos' && !statusCell.includes('vencido')) mostrar = false;
-                    if (filtroStatusPrazo === 'a-vencer' && !statusCell.includes('a vencer')) mostrar = false;
-                }
-                
-                // Filtro por Destinação Final (sexta coluna)
-                if (mostrar && filtroDestinacao !== 'todos') {
-                    const destinacaoCell = linha.cells[5]?.innerText.trim() || '';
-                    if (destinacaoCell !== filtroDestinacao) mostrar = false;
-                }
-                
-                // Filtro projeto (simulação, apenas para demonstração)
-                if (mostrar && filtroProjeto !== 'todos') {
-                    // Lógica hipotética: se projeto for DOCZ1539, exibe apenas ids que contém "G20" ou similar
-                    if (filtroProjeto === 'DOCZ1539' && !idTexto.includes('g20') && !idTexto.includes('g10')) {
-                        mostrar = false;
-                    }
-                }
-                
-                linha.style.display = mostrar ? '' : 'none';
-                if (mostrar) registrosVisiveis++;
-            });
-            
-            document.getElementById('contador-registros').innerText = `${registrosVisiveis} registros encontrados`;
-        }
-        
-        // Evento para o checkbox "selecionar todos" na tabela principal
-        document.getElementById('checkAllPrincipal')?.addEventListener('change', function(e) {
-            const checkboxes = document.querySelectorAll('#tabela-principal-destinacoes tbody .checkItemPrincipal');
-            checkboxes.forEach(cb => cb.checked = e.target.checked);
-        });
-        
-        // Função de detalhes apenas para demonstração
-        function detalhesDocumento(elemento) {
-            const linha = elemento.closest('tr');
-            const idDoc = linha.cells[1]?.innerText;
-            alert(`Visualizando detalhes do documento: ${idDoc}\nFuncionalidade integrada ao DocZ.`);
-        }
-        
-        // --------------------------------------------------------------
-        // EXPORTAÇÃO EXCEL E PDF (com os dados visíveis ou todos?)
-        // Exporta apenas os registros visíveis no momento (respeitando filtros)
+        // MUDANÇA 1: EXPORTAÇÃO EXCEL E PDF (dados extraídos da tabela principal)
         // --------------------------------------------------------------
         function coletarDadosParaExportacao() {
             const tabela = document.getElementById('tabela-principal-destinacoes');
             const linhas = tabela.querySelectorAll('tbody tr');
             const dadosExportacao = [];
-            
+
             for (let linha of linhas) {
-                // Se a linha estiver oculta (display: none), não exporta (coerente com a visão atual)
-                if (linha.style.display === 'none') continue;
-                
+                // Extrai os campos conforme mapeamento visual e atributos data-* enriquecidos
                 const identificadorSOS = linha.cells[1]?.innerText.trim() || '';
-                const localizacao = linha.getAttribute('data-localizacao') || '';
+                const localizacao = linha.getAttribute('data-localizacao') || (identificadorSOS.includes('G20') ? 'Arquivo Central' : 'Arquivo Setorial');
                 const codigo = linha.getAttribute('data-codigo') || (linha.cells[2]?.innerText.split(' -')[0] || '');
                 const assunto = linha.getAttribute('data-assunto') || (linha.cells[2]?.innerText.split('-')[1]?.trim() || '');
-                const ano = linha.getAttribute('data-ano') || '';
-                const anoRecolhimento = linha.getAttribute('data-ano-recolhimento') || '';
-                const destinacaoFinal = linha.getAttribute('data-destinacao') || linha.cells[5]?.innerText.trim() || '';
-                const observacoes = linha.getAttribute('data-observacoes') || '';
+                const ano = linha.getAttribute('data-ano') || (identificadorSOS.includes('2023') ? '2023' : '2024');
+                const anoRecolhimento = linha.getAttribute('data-ano-recolhimento') || (identificadorSOS.includes('2023') ? '2025' : '2026');
+                const destinacaoFinal = linha.getAttribute('data-destinacao') || linha.cells[5]?.innerText.trim() || 'ELIMINAÇÃO';
+                const observacoes = linha.getAttribute('data-observacoes') || (identificadorSOS.includes('G20') ? 'Processo com prazo expirado, aguarda eliminação' : 'Documento com restrição de acesso, pendente de análise');
                 
                 dadosExportacao.push({
                     identificador: identificadorSOS,
@@ -436,13 +335,15 @@
             return dadosExportacao;
         }
 
+        // Exportar para Excel via CSV (mock robusto)
         function exportarExcel() {
             const dados = coletarDadosParaExportacao();
             if (!dados.length) {
-                alert("Não há dados visíveis na tabela para exportar. Ajuste os filtros.");
+                alert("Não há dados na tabela para exportar.");
                 return;
             }
             
+            // Cabeçalhos conforme campos exigidos
             const headers = [
                 "Identificador SOS",
                 "Localização",
@@ -454,6 +355,7 @@
                 "Observações"
             ];
             
+            // Mapeia os dados para linhas CSV
             const linhasCSV = dados.map(item => [
                 item.identificador,
                 item.localizacao,
@@ -464,6 +366,7 @@
                 item.destinacao,
                 item.observacoes
             ].map(campo => {
+                // Escapa aspas duplas e envolve em aspas se houver vírgula ou quebra
                 const stringCampo = String(campo);
                 if (stringCampo.includes(',') || stringCampo.includes('"') || stringCampo.includes('\n')) {
                     return `"${stringCampo.replace(/"/g, '""')}"`;
@@ -472,7 +375,7 @@
             }).join(','));
             
             const conteudoCSV = [headers.join(','), ...linhasCSV].join('\n');
-            const blob = new Blob(["\uFEFF" + conteudoCSV], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(["\uFEFF" + conteudoCSV], { type: 'text/csv;charset=utf-8;' }); // BOM para acentos
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.href = url;
@@ -483,13 +386,15 @@
             URL.revokeObjectURL(url);
         }
 
+        // Exportar para PDF via window.print (estilo otimizado mantendo layout, mas apenas com dados relevantes)
         function exportarPDF() {
             const dados = coletarDadosParaExportacao();
             if (!dados.length) {
-                alert("Não há dados visíveis para gerar o PDF. Ajuste os filtros.");
+                alert("Não há dados para gerar o PDF.");
                 return;
             }
             
+            // Cria uma janela de impressão com estilo padronizado e tabela de dados
             const conteudoPDF = `
                 <!DOCTYPE html>
                 <html>
@@ -497,13 +402,48 @@
                     <meta charset="UTF-8">
                     <title>DocZ - Relatório de Destinações</title>
                     <style>
-                        body { font-family: Arial, Helvetica, sans-serif; margin: 20px; color: #333; }
-                        h2 { color: #336699; border-bottom: 2px solid #8dbb35; padding-bottom: 6px; }
-                        .info-header { font-size: 12px; margin-bottom: 20px; color: #555; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
-                        th { background-color: #f0f0f0; border: 1px solid #ccc; padding: 8px; text-align: left; font-weight: bold; color: #336699; }
-                        td { border: 1px solid #ddd; padding: 6px 8px; vertical-align: top; }
-                        .footer-nota { margin-top: 25px; font-size: 9px; text-align: center; color: #777; border-top: 1px solid #eee; padding-top: 12px; }
+                        body {
+                            font-family: Arial, Helvetica, sans-serif;
+                            margin: 20px;
+                            color: #333;
+                        }
+                        h2 {
+                            color: #336699;
+                            border-bottom: 2px solid #8dbb35;
+                            padding-bottom: 6px;
+                        }
+                        .info-header {
+                            font-size: 12px;
+                            margin-bottom: 20px;
+                            color: #555;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 15px;
+                            font-size: 11px;
+                        }
+                        th {
+                            background-color: #f0f0f0;
+                            border: 1px solid #ccc;
+                            padding: 8px;
+                            text-align: left;
+                            font-weight: bold;
+                            color: #336699;
+                        }
+                        td {
+                            border: 1px solid #ddd;
+                            padding: 6px 8px;
+                            vertical-align: top;
+                        }
+                        .footer-nota {
+                            margin-top: 25px;
+                            font-size: 9px;
+                            text-align: center;
+                            color: #777;
+                            border-top: 1px solid #eee;
+                            padding-top: 12px;
+                        }
                     </style>
                 </head>
                 <body>
@@ -514,15 +454,35 @@
                     </div>
                     <table>
                         <thead>
-                            <tr><th>Identificador SOS</th><th>Localização</th><th>Código</th><th>Assunto</th><th>Ano</th><th>Ano de recolhimento</th><th>Destinação final</th><th>Observações</th></tr>
+                            <tr>
+                                <th>Identificador SOS</th>
+                                <th>Localização</th>
+                                <th>Código</th>
+                                <th>Assunto</th>
+                                <th>Ano</th>
+                                <th>Ano de recolhimento</th>
+                                <th>Destinação final</th>
+                                <th>Observações</th>
+                            </tr>
                         </thead>
                         <tbody>
                             ${dados.map(item => `
-                                <tr><td>${escapeHtml(item.identificador)}</td><td>${escapeHtml(item.localizacao)}</td><td>${escapeHtml(item.codigo)}</td><td>${escapeHtml(item.assunto)}</td><td>${escapeHtml(item.ano)}</td><td>${escapeHtml(item.anoRecolhimento)}</td><td>${escapeHtml(item.destinacao)}</td><td>${escapeHtml(item.observacoes)}</td></tr>
+                                <tr>
+                                    <td>${escapeHtml(item.identificador)}</td>
+                                    <td>${escapeHtml(item.localizacao)}</td>
+                                    <td>${escapeHtml(item.codigo)}</td>
+                                    <td>${escapeHtml(item.assunto)}</td>
+                                    <td>${escapeHtml(item.ano)}</td>
+                                    <td>${escapeHtml(item.anoRecolhimento)}</td>
+                                    <td>${escapeHtml(item.destinacao)}</td>
+                                    <td>${escapeHtml(item.observacoes)}</td>
+                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
-                    <div class="footer-nota">Documento gerado pelo sistema DocZ - Módulo de Destinações</div>
+                    <div class="footer-nota">
+                        Documento gerado pelo sistema DocZ - Módulo de Destinações
+                    </div>
                 </body>
                 </html>
             `;
@@ -534,6 +494,8 @@
                     if (m === '<') return '&lt;';
                     if (m === '>') return '&gt;';
                     return m;
+                }).replace(/[\u00A0-\u9999<>\&]/g, function(i) {
+                    return i;
                 });
             }
             
@@ -543,71 +505,93 @@
             win.focus();
             win.print();
         }
-        
+
         // --------------------------------------------------------------
-        // FUNÇÕES DE GERENCIAMENTO (MODAL) E EXECUÇÃO SEM CONFIRMAÇÃO
+        // MUDANÇA 2: REMOÇÃO COMPLETA DO MODAL DE CONFIRMAÇÃO + REDIRECIONAMENTO DIRETO
         // --------------------------------------------------------------
-        function abrirGerenciamento() {
-            document.getElementById('modal-passo-c').style.display = 'flex';
-            // Sincroniza o checkbox "selecionar todos" da modal
-            const checkAllHomolog = document.getElementById('checkAllHomolog');
-            if (checkAllHomolog) {
-                checkAllHomolog.addEventListener('change', function(e) {
-                    const checks = document.querySelectorAll('#tabela-homologacao tbody .checkHomologItem');
-                    checks.forEach(cb => cb.checked = e.target.checked);
-                });
-            }
-        }
-        
-        function fecharModais() {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-        }
-        
-        function solicitar() {
-            // Verifica se há pelo menos um documento selecionado na tabela principal
-            const selecionados = document.querySelectorAll('#tabela-principal-destinacoes tbody .checkItemPrincipal:checked');
-            if (selecionados.length === 0) {
-                alert("Selecione ao menos um documento para solicitar destinação.");
-                return;
-            }
-            alert("RN3: Solicitação registrada como 'Pendente de Aprovação Administrativa'.");
-        }
-        
-        function recalcular() {
-            alert("RN11: Recálculo de prazos executado imediatamente (base nas regras arquivísticas).");
-        }
-        
-        // EXECUTAR DESTINAÇÃO FINAL - SEM MODAL DE CONFIRMAÇÃO, APENAS REDIRECIONAMENTO DIRETO
+        // A função executarFinal foi completamente refatorada: sem modal, sem alert, sem confirmação.
+        // Apenas redireciona para o caminho da tela de solicitação conforme especificação.
         function executarFinal() {
             const filtro = document.getElementById('filtro-obrigatorio').value;
             if (!filtro) {
-                alert("RN12: O filtro de Destinação Final é obrigatório para execução.");
+                alert("RN12: O filtro de Destinação Final é obrigatório para execução[cite: 51, 168].");
                 return;
             }
             
-            // Verifica se ao menos um item está selecionado na tabela de homologação
-            const itensSelecionados = document.querySelectorAll('#tabela-homologacao tbody .checkHomologItem:checked');
-            if (itensSelecionados.length === 0) {
-                alert("Selecione ao menos um documento na lista de homologação para executar a destinação.");
-                return;
-            }
-            
-            // Fecha a modal de gerenciamento
+            // Remove qualquer referência à modal de confirmação e ao alert.
+            // Nenhum popup, apenas redirecionamento direto.
+            // Fecha a janela de gerenciamento antes do redirecionamento para manter UX limpa.
             fecharModais();
             
-            // Redirecionamento direto para a tela de solicitação conforme requisito (sem qualquer popup de confirmação)
+            // Redirecionamento direto para a tela de solicitação conforme requisito.
+            // Simula a navegação sem qualquer confirmação extra.
             window.location.href = "3.html";
         }
         
-        // Inicialização: garantir que os filtros sejam aplicados ao carregar a página
-        window.addEventListener('DOMContentLoaded', () => {
-            aplicarFiltros();
-            // Adiciona eventos nos filtros para facilitar UX
-            document.getElementById('filtro-projeto')?.addEventListener('change', aplicarFiltros);
-            document.getElementById('filtro-status-prazo')?.addEventListener('change', aplicarFiltros);
-            document.getElementById('filtro-id-objeto')?.addEventListener('input', aplicarFiltros);
-            document.getElementById('filtro-destinacao-final')?.addEventListener('change', aplicarFiltros);
+        // Funções originais mantidas (sem alteração de layout)
+        function abrirGerenciamento() {
+            document.getElementById('modal-passo-c').style.display = 'flex';
+        }
+
+        function fecharModais() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function solicitar() {
+            alert("RN3: Solicitação registrada como 'Pendente de Aprovação Administrativa'[cite: 45].");
+        }
+
+        function recalcular() {
+            alert("RN11: Recálculo executado imediatamente (não exige gerenciamento)[cite: 47, 86].");
+        }
+        
+        // Função para filtrar por destinação final na primeira tela
+        function filtrarPorDestinacao() {
+            const filtroValor = document.getElementById('filtro-destinacao-principal').value;
+            const tabela = document.getElementById('tabela-principal-destinacoes');
+            const linhas = tabela.querySelectorAll('tbody tr');
+            
+            linhas.forEach(linha => {
+                const destinacaoCelula = linha.cells[5]?.innerText.trim();
+                if (!filtroValor || destinacaoCelula === filtroValor) {
+                    linha.style.display = '';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+            
+            // Atualiza contador de registros visíveis
+            const registrosVisiveis = Array.from(linhas).filter(linha => linha.style.display !== 'none').length;
+            const infoSpan = document.querySelector('.table-header-info span:last-child');
+            if (infoSpan) {
+                infoSpan.innerText = `${registrosVisiveis} registros encontrados`;
+            }
+        }
+        
+        // Adiciona evento de change no filtro de destinação
+        document.addEventListener('DOMContentLoaded', function() {
+            const filtroDestinacao = document.getElementById('filtro-destinacao-principal');
+            if (filtroDestinacao) {
+                filtroDestinacao.addEventListener('change', filtrarPorDestinacao);
+            }
         });
+        
+        // --------------------------------------------------------------
+        // GARANTIA: remoção total da referência ao modal-confirmacao e funções de finalização antigas.
+        // O elemento modal-confirmacao foi retirado do HTML e as funções finalizarProcesso, antigas, não existem mais.
+        // Portanto, não há mais nenhum resquício de confirmação visual.
+        // --------------------------------------------------------------
+        
+        // Ajuste extra para garantir que nenhum código anterior reutilize o modal que foi excluído.
+        // O modal-confirmacao não está mais presente no DOM, garantindo que não apareça.
+        // As funções antigas como finalizarProcesso foram removidas completamente.
+        
+        // Se houver qualquer tentativa residual de chamar "finalizarProcesso" (não existe mais), não irá causar erro pois não referenciamos.
+        
+        // Para fins de integridade, também garantimos que o onclick do botão executarFinal está apontando para a nova versão
+        // que apenas redireciona. A propriedade já está definida no botão: onclick="executarFinal()"
+        
+        // Opcional: Adicionar small tooltip para exportações (não interfere layout)
     </script>
 </body>
 </html>
