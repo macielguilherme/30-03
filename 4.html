@@ -48,7 +48,7 @@
 
         .filters-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
             padding: 20px;
             background-color: #fdfdfd;
@@ -395,8 +395,14 @@
                 <label>Identificador SOS</label>
                 <input type="text" placeholder="Buscar...">
             </div>
+            <div class="filter-group">
+                <label>Classificação</label>
+                <select id="filtro-destinacao-principal">
+                    <option value="">000.0 | AÇÃO PREVENTIVA</option>
+                    <option value="ELIMINAÇÃO">000.1 | RELATÓRIOS DE ATIVIDADES</option>
+                </select>
+            </div>
         </div>
-
         <div class="table-header-info">
             <span>Listagem de documentos vencidos (DOCZ 1539)</span>
             <span>2 registros encontrados</span>
@@ -406,31 +412,36 @@
             <thead>
                 <tr>
                     <th style="width:30px"><input type="checkbox" id="checkAll"></th>
-                    <th>Objeto</th>
+                    <th>Identificador SOS</th>
+                    <th>Localização</th>
+                    <th>Status</th>
                     <th>Classificação</th>
                     <th>Sigilo Associado</th>
-                    <th>Controle de Prazos</th>
+                    <th>Controle de Prazos de Guarda</th>
                     <th>Destinação Final</th>
-                    <th>Ações</th>
+                    <th>Observações</th>
+                    <th>Data de Destinações</th>
+
                 </tr>
             </thead>
             <tbody>
 
-                <tr data-id="DC00159G10006934SOS" data-localizacao="Arquivo Setorial" data-codigo="213"
-                    data-assunto="Licenciamento" data-ano="2024" data-ano-recolhimento="2026"
-                    data-destinacao="ELIMINAÇÃO"
-                    data-observacoes="Documento com restrição de acesso, pendente de análise"
-                    data-classificacao-completa="213 | LICENCIAMENTO AMBIENTAL" data-classe="500" data-subclasse="510"
-                    data-grupo="515" data-subgrupo="515.10" data-fase-corrente="ENQUANTO VIGORA"
-                    data-fase-intermediaria="5 ANOS" data-data-producao="15/03/2024" data-data-destinacao="15/03/2029">
+                <tr data-id="DC00159G20005384SOS" data-localizacao="Arquivo Central" data-codigo="211"
+                    data-assunto="Pesquisa Mineral" data-ano="2023" data-ano-recolhimento="2025"
+                    data-destinacao="ELIMINAÇÃO" data-observacoes="Processo com prazo expirado, aguarda eliminação"
+                    data-classificacao-completa="211 | AUTORIZAÇÃO DE PESQUISA MINERAL" data-classe="400"
+                    data-subclasse="430" data-grupo="435" data-subgrupo="435.43" data-fase-corrente="ENQUANTO VIGORA"
+                    data-fase-intermediaria="10 ANOS" data-data-producao="05/01/2023" data-data-destinacao="05/01/2033">
                     <td><input type="checkbox" class="rowCheckbox"></td>
-                    <td>DC00159G10006934SOS</td>
-                    <td>213 - Licenciamento</td>
-                    <td>RESERVADO</td>
-                    <td><span class="badge-vencer">A vencer em 30 dias</span></td>
+                    <td>DC00159G20005384SOS</td>
+                    <td>CB9999900006955SOS</td>
+                    <td>ARQUIVADO</td>
+                    <td>003.2 | AÇÃO PREVENTIVA</td>
+                    <td></td>
+                    <td><span class="badge-vencido">Prazo vencido</span></td>
                     <td>ELIMINAÇÃO</td>
-                    <td><i class="fas fa-ellipsis-v" style="color:var(--primary-blue); cursor:pointer;"
-                            onclick="visualizarDetalhes(this)"></i></td>
+                    <td><i></i></td>
+                    <td>01/01/2027</td>
                 </tr>
             </tbody>
         </table>
